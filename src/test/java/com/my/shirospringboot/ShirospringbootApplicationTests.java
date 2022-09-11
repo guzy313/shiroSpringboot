@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.List;
+import java.io.FileInputStream;
+import java.util.*;
 
 @SpringBootTest
 class ShirospringbootApplicationTests {
@@ -52,6 +53,24 @@ class ShirospringbootApplicationTests {
 		ShiroUser shiroUser = (ShiroUser)BeanUtils.toBean(user,ShiroUser.class);
 		System.out.println(shiroUser);
 
+	}
+
+	@Test
+	void getProperties(){
+		try {
+			Properties properties = new Properties();
+			properties.load(this.getClass().getClassLoader().
+					getResourceAsStream("authentication.properties"));
+			Set<Map.Entry<Object, Object>> entries = properties.entrySet();
+			Iterator<Map.Entry<Object, Object>> iterator = entries.iterator();
+			while (iterator.hasNext()){
+				Map.Entry<Object, Object> next = iterator.next();
+				System.out.println(next.getKey());
+				System.out.println(next.getValue());
+			}
+		}catch (Exception e){
+			System.out.println(e.getMessage());
+		}
 	}
 
 
