@@ -71,7 +71,7 @@ public class ShiroConfig {
         sessionManager.setSessionIdCookieEnabled(true);
         //指定cookie创建方式(创建方式是 当前类中simpleCookie())
         sessionManager.setSessionIdCookie(this.simpleCookie());
-        //设置cookie的过期时间((60 * 60 * 1000);//单位为毫秒)
+        //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
         //此处设置为1小时过期
         sessionManager.setGlobalSessionTimeout(60 * 60 * 1000);
         return sessionManager;
