@@ -99,14 +99,9 @@ public class LoginAction {
      * @return
      */
     @RequestMapping("/saveNewPassword")
-    public Boolean saveNewPassword(String oldPassword,String newPassword){
+    public Boolean saveNewPassword(String oldPassword,String newPassword) throws Exception {
         //TODO
-        try {
-            return userService.saveNewPassword(oldPassword,newPassword);
-        } catch (Exception e) {
-           log.error("密码修改失败",e);
-            return false;
-        }
+        return userService.saveNewPassword(oldPassword,newPassword);
     }
 
 }

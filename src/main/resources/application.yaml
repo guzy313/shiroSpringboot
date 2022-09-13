@@ -1,3 +1,5 @@
+server:
+  port: 8099
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -12,3 +14,4 @@ mybatis:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
+

@@ -26,7 +26,6 @@ class ShirospringbootApplicationTests {
 
 	@Test
 	void contextLoads() {
-
 	}
 
 
@@ -71,6 +70,17 @@ class ShirospringbootApplicationTests {
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
+	}
+
+	@Test
+	void testBeanUtils(){
+		ShiroUser shiroUser = new ShiroUser();
+		shiroUser.setId("123");
+		shiroUser.setLoginName("test1");
+
+		ShUsers shUsers = (ShUsers)BeanUtils.toBean(shiroUser, ShUsers.class);
+		System.out.println(shUsers);
+
 	}
 
 
