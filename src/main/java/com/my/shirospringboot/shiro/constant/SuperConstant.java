@@ -27,5 +27,8 @@ public class SuperConstant {
      */
     public static final Integer HashIterations = 33;
 
-
+    /**
+     * permission 权限最高级父id
+     */
+    public static final String ROOT_PARENT_ID = "0";
 }

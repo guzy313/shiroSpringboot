@@ -2,14 +2,21 @@ package com.my.shirospringboot.shiro.web.account;
 
 import com.my.shirospringboot.mapper.ShPermissionMapper;
 import com.my.shirospringboot.pojo.ShPermission;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
+import com.my.shirospringboot.shiro.service.impl.PermissionServiceImpl;
+import com.my.shirospringboot.shiro.vo.PermissionVo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
@@ -21,8 +28,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/permissionAction")
 public class PermissionAction {
-    @Autowired
-    private ShPermissionMapper shPermissionMapper;
+    private static final Logger log = LoggerFactory.getLogger(PermissionAction.class);
+    private PermissionServiceImpl permissionService;
 
     //自定义格式转换器
     @InitBinder
@@ -37,15 +44,99 @@ public class PermissionAction {
      */
     @RequestMapping("/listInitialize")
     public String listInitialize(){
-        return "resource/resource-listInitialize";
+        return "permission/permission-listInitialize";
     }
 
+    /**
+     * @Description: 获取权限列表
+     * @param permissionVo
+     * @param rows
+     * @param page
+     * @return
+     */
     @RequestMapping("/list")
     @ResponseBody
-    public ModelMap list(ShPermission permission,Integer rows,Integer page){
-//        List<ShPermission> list =
-        //TODO
-        return new ModelMap();
+    public ModelMap list(PermissionVo permissionVo, Integer rows, Integer page){
+       try {
+           List<ShPermission> list = permissionService.findPermissionList(permissionVo,rows,page);
+           Long total = permissionService.countPermissionList(permissionVo);
+           ModelMap modelMap = new ModelMap();
+           modelMap.addAttribute("data",list);
+           modelMap.addAttribute("total",total);
+           return modelMap;
+       }catch (Exception e){
+           log.error("获取权限列表失败",e.getMessage());
+           throw new RuntimeException("获取权限列表失败");
+       }
     }
+
+    /**
+     * @Description: 打开新增页面
+     * @param shPermission
+     * @return
+     */
+    @RequestMapping("/input")
+    public ModelAndView input(ShPermission shPermission){
+        try {
+            //此处 shPermission 为父级对象
+            ModelAndView modelAndView = new ModelAndView("/permission/permission-input");
+            ShPermission parentShPermission = null;
+            if(shPermission.getId() == null){//未选中节点情况
+                parentShPermission = permissionService.findPermissionById(shPermission.getParentId());
+                if(!parentShPermission.getParentId().equals(SuperConstant.ROOT_PARENT_ID)){
+                    //此处不理解 TODO
+                    shPermission.setSystemCode(parentShPermission.getSystemCode());
+                }
+            }else{
+                //选中节点
+                shPermission = permissionService.findPermissionById(shPermission.getId());
+                parentShPermission = permissionService.findPermissionById(shPermission.getParentId());
+            }
+            modelAndView.addObject("parentId",shPermission.getParentId());
+            modelAndView.addObject("parentName",parentShPermission.getPermissionName());
+            modelAndView.addObject("permission",shPermission);
+            return modelAndView;
+        }catch (Exception e){
+            log.error("新增页面查询错误",e.getMessage());
+            throw new RuntimeException("新增页面查询错误");
+        }
+    }
+
+    /**
+     * @Description: 新增或者修改权限
+     * @param shPermission
+     * @return
+     */
+    @RequestMapping("/save")
+    @ResponseBody
+    public boolean save(@ModelAttribute("permission")ShPermission shPermission){
+        try {
+            return permissionService.savePermission(shPermission);
+        }catch (Exception e){
+            log.error("保存失败",e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @Description: 删除权限
+     * @param shPermission
+     * @return
+     */
+    @RequestMapping("/delete")
+    @ResponseBody
+    public boolean delete(@ModelAttribute("permission")ShPermission shPermission){
+        try {
+            if(permissionService.findPermissionListByParentId(shPermission.getId()).size() > 0){
+                //如果被删除的节点有子节点，则不允许删除
+                return false;
+            }
+            return permissionService.deletePermission(shPermission);
+        }catch (Exception e){
+            log.error("删除失败",e.getMessage());
+            return false;
+        }
+    }
+
 
 }

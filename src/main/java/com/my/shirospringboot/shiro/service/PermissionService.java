@@ -1,6 +1,7 @@
 package com.my.shirospringboot.shiro.service;
 
 import com.my.shirospringboot.pojo.ShPermission;
+import com.my.shirospringboot.shiro.vo.PermissionVo;
 
 import java.util.List;
 
@@ -11,6 +12,43 @@ import java.util.List;
  */
 public interface PermissionService {
 
-    List<ShPermission> findPermissionList(ShPermission shPermission,Integer rows,Integer page);
+    /**
+     * @Description 查询权限分页列表
+     * @param permissionVo
+     * @param rows
+     * @param page
+     * @return
+     */
+    List<ShPermission> findPermissionList(PermissionVo permissionVo, Integer rows, Integer page);
+
+    /**
+     * @Description 查询分页前总数
+     * @param permissionVo
+     * @return
+     * @throws Exception
+     */
+    Long countPermissionList(PermissionVo permissionVo) throws Exception;
+
+    /**
+     * @Description 查询一个权限对象 byId
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    ShPermission findPermissionById(String id) throws Exception;
+
+    /**
+     * 通过父ID去查子权限列表
+     * @param parentId
+     * @return
+     * @throws Exception
+     */
+    List<ShPermission> findPermissionListByParentId(String parentId) throws Exception;
+
+
+    boolean savePermission(ShPermission shPermission) throws Exception;
+
+    boolean deletePermission(ShPermission shPermission) throws Exception;
+
 
 }
