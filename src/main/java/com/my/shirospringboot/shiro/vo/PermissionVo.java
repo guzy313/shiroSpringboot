@@ -5,7 +5,17 @@ import com.my.shirospringboot.pojo.ShPermission;
 /**
  * @author Gzy
  * @version 1.0
- * @Description
+ * @Description 权限视图对象
  */
 public class PermissionVo extends ShPermission {
+    private String roleId;
+
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
+    }
 }

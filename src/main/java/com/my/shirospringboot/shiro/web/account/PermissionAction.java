@@ -1,6 +1,8 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.my.shirospringboot.mapper.ShPermissionMapper;
 import com.my.shirospringboot.pojo.ShPermission;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,6 +21,8 @@ import java.util.List;
 @Controller
 @RequestMapping("/permissionAction")
 public class PermissionAction {
+    @Autowired
+    private ShPermissionMapper shPermissionMapper;
 
     //自定义格式转换器
     @InitBinder
@@ -39,6 +43,7 @@ public class PermissionAction {
     @RequestMapping("/list")
     @ResponseBody
     public ModelMap list(ShPermission permission,Integer rows,Integer page){
+//        List<ShPermission> list =
         //TODO
         return new ModelMap();
     }
