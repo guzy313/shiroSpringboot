@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,5 +62,41 @@ public class RoleAction {
             throw new RuntimeException("查询角色错误");
         }
     }
+
+
+    /**
+     * @Description: 打开新增页面
+     * @param roleVo
+     * @return
+     */
+    @RequestMapping("/input")
+    public ModelAndView input(RoleVo roleVo){
+        try {
+            //此处 shPermission 为父级对象
+            ModelAndView modelAndView = new ModelAndView("/role/role-input");
+            if(!StringUtils.hasLength(roleVo.getId())){//修改情况
+
+            }
+
+
+
+
+
+            return modelAndView;
+        }catch (Exception e){
+            log.error("新增页面查询错误",e.getMessage());
+            throw new RuntimeException("新增页面查询错误");
+        }
+    }
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -39,12 +39,12 @@ public class PermissionAction {
     }
 
     /**
-     * @description: 初始化列表
+     * @description: 初始化列表页面
      * @return
      */
     @RequestMapping("/listInitialize")
     public String listInitialize(){
-        return "permission/permission-listInitialize";
+        return "/permission/permission-listInitialize";
     }
 
     /**
@@ -68,38 +68,6 @@ public class PermissionAction {
            log.error("获取权限列表失败",e.getMessage());
            throw new RuntimeException("获取权限列表失败");
        }
-    }
-
-    /**
-     * @Description: 打开新增页面
-     * @param shPermission
-     * @return
-     */
-    @RequestMapping("/input")
-    public ModelAndView input(ShPermission shPermission){
-        try {
-            //此处 shPermission 为父级对象
-            ModelAndView modelAndView = new ModelAndView("/permission/permission-input");
-            ShPermission parentShPermission = null;
-            if(shPermission.getId() == null){//未选中节点情况
-                parentShPermission = permissionService.findPermissionById(shPermission.getParentId());
-                if(!parentShPermission.getParentId().equals(SuperConstant.ROOT_PARENT_ID)){
-                    //此处不理解 TODO
-                    shPermission.setSystemCode(parentShPermission.getSystemCode());
-                }
-            }else{
-                //选中节点
-                shPermission = permissionService.findPermissionById(shPermission.getId());
-                parentShPermission = permissionService.findPermissionById(shPermission.getParentId());
-            }
-            modelAndView.addObject("parentId",shPermission.getParentId());
-            modelAndView.addObject("parentName",parentShPermission.getPermissionName());
-            modelAndView.addObject("permission",shPermission);
-            return modelAndView;
-        }catch (Exception e){
-            log.error("新增页面查询错误",e.getMessage());
-            throw new RuntimeException("新增页面查询错误");
-        }
     }
 
     /**
