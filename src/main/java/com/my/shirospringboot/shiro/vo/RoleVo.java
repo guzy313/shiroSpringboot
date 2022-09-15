@@ -39,4 +39,12 @@ public class RoleVo extends ShRoles {
     public void setPermissionList(List<ShPermission> permissionList) {
         this.permissionList = permissionList;
     }
+
+    public String getHasPermissionIds() {
+        return hasPermissionIds;
+    }
+
+    public void setHasPermissionIds(String hasPermissionIds) {
+        this.hasPermissionIds = hasPermissionIds;
+    }
 }

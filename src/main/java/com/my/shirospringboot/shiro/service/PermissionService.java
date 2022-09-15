@@ -45,8 +45,15 @@ public interface PermissionService {
      */
     List<ShPermission> findPermissionListByParentId(String parentId) throws Exception;
 
+    /**
+     * 通过 角色查询角色拥有的权限列表
+     * @param roleId
+     * @return
+     * @throws Exception
+     */
+    List<ShPermission> findRoleHasPermissions(String roleId) throws Exception;
 
-    boolean savePermission(ShPermission shPermission) throws Exception;
+    boolean saveOrUpdatePermission(ShPermission shPermission) throws Exception;
 
     boolean deletePermission(ShPermission shPermission) throws Exception;
 

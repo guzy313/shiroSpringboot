@@ -22,4 +22,8 @@ public interface ShPermissionMapper extends BaseMapper<ShPermission> {
     @Select("select * from sh_permission where parentId = #{parentId} ")
     List<ShPermission> findListByParentId(String parentId);
 
+    @Select("select a.* from sh_permission a left join sh_role_permission b on a.id = b.permissionId " +
+            " where b.roleId = #{roleId} ")
+    List<ShPermission> findRoleHasPermissions(String roleId);
+
 }

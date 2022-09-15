@@ -42,7 +42,13 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public boolean savePermission(ShPermission shPermission) throws Exception {
+    public List<ShPermission> findRoleHasPermissions(String roleId) throws Exception {
+        List<ShPermission> list = shPermissionMapper.findRoleHasPermissions(roleId);
+        return list;
+    }
+
+    @Override
+    public boolean saveOrUpdatePermission(ShPermission shPermission) throws Exception {
 
         if(!StringUtils.hasLength(shPermission.getId())){
             //新增

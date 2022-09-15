@@ -79,7 +79,7 @@ public class PermissionAction {
     @ResponseBody
     public boolean save(@ModelAttribute("permission")ShPermission shPermission){
         try {
-            return permissionService.savePermission(shPermission);
+            return permissionService.saveOrUpdatePermission(shPermission);
         }catch (Exception e){
             log.error("保存失败",e.getMessage());
             return false;
