@@ -32,4 +32,13 @@ public interface RoleService {
 
     boolean saveOrUpdateRole(RoleVo roleVo) throws Exception;
 
+    /**
+     * @Description: 通过ID、标志更新角色是否启用
+     * @param ids
+     * @param flag
+     * @return
+     * @throws Exception
+     */
+    boolean updateByIds(List<String> ids,String flag) throws Exception;
+
 }

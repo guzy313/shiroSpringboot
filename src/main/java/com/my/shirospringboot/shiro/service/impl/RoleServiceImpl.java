@@ -5,6 +5,7 @@ import com.my.shirospringboot.mapper.ShRolePermissionMapper;
 import com.my.shirospringboot.mapper.ShRolesMapper;
 import com.my.shirospringboot.pojo.ShRolePermission;
 import com.my.shirospringboot.pojo.ShRoles;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.RoleService;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.utils.BeanUtils;
@@ -67,7 +68,7 @@ public class RoleServiceImpl implements RoleService {
                         ShRolePermission shRolePermission = new ShRolePermission();
                         shRolePermission.setPermissionId(s);
                         shRolePermission.setRoleId(shRoles.getId());
-                        shRolePermission.setEnableFlag("1");
+                        shRolePermission.setEnableFlag(SuperConstant.YES);
                         shRolePermissionMapper.insert(shRolePermission);
                     }
                 }
@@ -89,7 +90,7 @@ public class RoleServiceImpl implements RoleService {
                        ShRolePermission shRolePermissionToSave = new ShRolePermission();
                        shRolePermissionToSave.setPermissionId(s);
                        shRolePermissionToSave.setRoleId(shRoles.getId());
-                       shRolePermissionToSave.setEnableFlag("1");
+                       shRolePermissionToSave.setEnableFlag(SuperConstant.YES);
                        shRolePermissionMapper.insert(shRolePermissionToSave);
                    }
                 }
@@ -98,4 +99,11 @@ public class RoleServiceImpl implements RoleService {
         }
         return false;
     }
+
+    @Override
+    public boolean updateByIds(List<String> ids,String flag) throws Exception {
+        //TODO
+        return false;
+    }
+
 }

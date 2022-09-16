@@ -2,6 +2,7 @@ package com.my.shirospringboot.shiro.web.account;
 
 import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShRoles;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.impl.LoginServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.PermissionServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.RoleServiceImpl;
@@ -15,10 +16,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -118,8 +121,29 @@ public class RoleAction {
         }
     }
 
-
-
+    /**
+     * @Description: 角色启用
+     * @param ids
+     * @return
+     */
+    @RequestMapping("/start")
+    @ResponseBody
+    public String start(String ids){
+        String[] idArray = ids.split(",");
+        List<String> list = new ArrayList<>();
+        for (String s:idArray) {
+            list.add(s);
+        }
+       try {
+           Boolean flag = roleService.updateByIds(list, SuperConstant.YES);
+           if(flag){
+               return "启用成功";
+           }
+       }catch (Exception e){
+            log.error("启用失败",e.getMessage());
+       }
+       return "启用失败";
+    }
 
 
 
