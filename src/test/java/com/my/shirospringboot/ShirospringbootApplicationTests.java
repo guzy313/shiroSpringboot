@@ -1,12 +1,16 @@
 package com.my.shirospringboot;
 
+import com.my.shirospringboot.mapper.ShRolesMapper;
 import com.my.shirospringboot.mapper.ShUsersMapper;
+import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.pojo.User;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.core.bridge.ShUsersBridgeService;
 import com.my.shirospringboot.shiro.core.bridge.impl.ShUsersBridgeServiceImpl;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.StringUtils;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,9 @@ import java.util.*;
 class ShirospringbootApplicationTests {
 	@Autowired
 	private ShUsersMapper shUsersMapper;
+
+	@Autowired
+	private ShRolesMapper shRolesMapper;
 
 	@Autowired
 	private ShUsersBridgeServiceImpl shUsersBridgeService;
@@ -82,6 +89,32 @@ class ShirospringbootApplicationTests {
 		System.out.println(shUsers);
 
 	}
+
+
+	@Test
+	void testIds(){
+
+//		for (int i = 0; i < 10; i++) {
+//			ShRoles shRoles = new ShRoles();
+//			shRoles.setRoleName("测试角色"+i);
+//			shRoles.setEnableFlag(SuperConstant.NO);
+//			shRolesMapper.insert(shRoles);
+//		}
+		List<String> s = new ArrayList<>();
+		s.add("1571034803604295681");
+		s.add("1571034803688181762");
+		s.add("1571034803688181763");
+		s.add("1571034803688181764");
+		s.add("1571034803688181765");
+		s.add("1571034803755290625");
+
+		int i = shRolesMapper.updateEnableFlagByIds(s, SuperConstant.NO);
+		System.out.println(i);
+//		List<ShRoles> shRolesByIds = shRolesMapper.getShRolesByIds(s);
+//		System.out.println(shRolesByIds);
+
+	}
+
 
 
 }

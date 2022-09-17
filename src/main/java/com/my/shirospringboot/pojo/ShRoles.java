@@ -69,4 +69,16 @@ public class ShRoles {
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
     }
+
+    @Override
+    public String toString() {
+        return "ShRoles{" +
+                "id='" + id + '\'' +
+                ", roleName='" + roleName + '\'' +
+                ", label='" + label + '\'' +
+                ", description='" + description + '\'' +
+                ", sort=" + sort +
+                ", enableFlag='" + enableFlag + '\'' +
+                '}';
+    }
 }

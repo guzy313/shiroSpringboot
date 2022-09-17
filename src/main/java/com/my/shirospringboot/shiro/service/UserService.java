@@ -1,5 +1,12 @@
 package com.my.shirospringboot.shiro.service;
 
+import com.my.shirospringboot.pojo.ShRoles;
+import com.my.shirospringboot.pojo.ShUsers;
+import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserVo;
+
+import java.util.List;
+
 /**
  * @author Gzy
  * @version 1.0
@@ -15,5 +22,30 @@ public interface UserService {
     Boolean saveNewPassword(String oldPassword,String newPassword) throws Exception;
 
 
+    /**
+     * @Description: 查询用户分页列表
+     * @param userVo
+     * @param rows
+     * @param page
+     * @return
+     * @throws Exception
+     */
+    List<ShUsers> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception;
+
+    /**
+     * @Description: 查询用户分页前总数
+     * @param userVo
+     * @return
+     * @throws Exception
+     */
+    Long countUserList(UserVo userVo) throws Exception;
+
+    /**
+     * @Description: 新增修改用户信息
+     * @param userVo
+     * @return
+     * @throws Exception
+     */
+    Boolean saveOrUpdateUser(UserVo userVo) throws Exception;
 
 }

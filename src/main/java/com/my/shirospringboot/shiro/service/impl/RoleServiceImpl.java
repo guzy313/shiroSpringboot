@@ -9,9 +9,9 @@ import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.RoleService;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -102,7 +102,10 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public boolean updateByIds(List<String> ids,String flag) throws Exception {
-        //TODO
+        int update = shRolesMapper.updateEnableFlagByIds(ids, flag);
+        if(update > 0){
+            return true;
+        }
         return false;
     }
 
