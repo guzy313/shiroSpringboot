@@ -38,7 +38,7 @@ public class PropertiesUtils {
         Iterator<Map.Entry<Object, Object>> iterator = entries.iterator();
         while (iterator.hasNext()) {
             Map.Entry<Object, Object> next = iterator.next();
-            map.put(String.valueOf(next.getKey()),String.valueOf(next.getKey()));
+            map.put(String.valueOf(next.getKey()),String.valueOf(next.getValue()));
         }
         return map;
     }
