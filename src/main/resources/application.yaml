@@ -1,12 +1,42 @@
 server:
   port: 8099
 spring:
+  thymeleaf:
+    mode: HTML
+    prefix: classpath:/static/
+  #  servlet:
+#    multipart:
+#      #启用文件上传
+#      enabled: true
+#      #上传文件临时保存位置
+#      location:
+#      #单个文件上传最大大小限制
+#      max-file-size: 50MB
+#      #单次请求主体最大大小限制
+#      max-request-size: 500MB
+#  mvc:
+#    format:
+#      #日期格式
+#      date: yyyy-MM-dd
+#      #日期时间格式
+#      date-time: yyyy-MM-dd HH:mm:ss
+#    servlet:
+#      #mvc 的servlet 路径
+#      path: /
+#      #匹配静态资源路径
+#    static-path-pattern: /static/*
+#    view:
+#      #view 视图前缀
+#      prefix:
+#      #view 视图后缀
+#      suffix: .html
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db01?useUnicode=true&character=UTF-8&serverTimezone=UTC
     username: root
     password: syq
     type: com.alibaba.druid.pool.DruidDataSource
+
 mybatis:
   config-location: classpath:mybatis/mybatis.xml
   mapper-locations: classpath:mybatis/mapper/*.xml
@@ -14,4 +44,3 @@ mybatis:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
-

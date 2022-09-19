@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +33,13 @@ public class LoginAction {
     private LoginServiceImpl loginService;
     @Autowired
     private UserServiceImpl userService;
+
+    @RequestMapping("/login")
+    public String loginPage(){
+        System.out.println(123);
+        return "login";
+    }
+
 
     /**
      * @Description 登录方法
