@@ -100,18 +100,22 @@ class ShirospringbootApplicationTests {
 //			shRoles.setEnableFlag(SuperConstant.NO);
 //			shRolesMapper.insert(shRoles);
 //		}
-		List<String> s = new ArrayList<>();
-		s.add("1571034803604295681");
-		s.add("1571034803688181762");
-		s.add("1571034803688181763");
-		s.add("1571034803688181764");
-		s.add("1571034803688181765");
-		s.add("1571034803755290625");
-
-		int i = shRolesMapper.updateEnableFlagByIds(s, SuperConstant.NO);
-		System.out.println(i);
+//		List<String> s = new ArrayList<>();
+//		s.add("1571034803604295681");
+//		s.add("1571034803688181762");
+//		s.add("1571034803688181763");
+//		s.add("1571034803688181764");
+//		s.add("1571034803688181765");
+//		s.add("1571034803755290625");
+//
+//		int i = shRolesMapper.updateEnableFlagByIds(s, SuperConstant.NO);
+//		System.out.println(i);
 //		List<ShRoles> shRolesByIds = shRolesMapper.getShRolesByIds(s);
 //		System.out.println(shRolesByIds);
+		Map<String,Object> columnMap = new HashMap<>();
+		columnMap.put("roleName","测试角色0");
+		List<ShRoles> list = shRolesMapper.selectByMap(columnMap);
+		System.out.println(list);
 
 	}
 

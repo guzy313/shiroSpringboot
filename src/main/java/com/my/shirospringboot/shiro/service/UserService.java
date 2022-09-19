@@ -48,4 +48,22 @@ public interface UserService {
      */
     Boolean saveOrUpdateUser(UserVo userVo) throws Exception;
 
+    /**
+     * @Description: 删除用户
+     * @param userVo
+     * @return
+     * @throws Exception
+     */
+    Boolean deleteUser(UserVo userVo) throws Exception;
+
+    /**
+     * @Description: 验证用户名唯一
+     * @param userVo
+     * @return
+     * @throws Exception
+     */
+    Boolean checkLoginName(UserVo userVo) throws Exception;
+
+
+
 }

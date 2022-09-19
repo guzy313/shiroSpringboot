@@ -68,6 +68,8 @@ public class UserAction {
      * @param userVo
      * @return boolean
      */
+    @RequestMapping("/save")
+    @ResponseBody
     public Boolean save(@ModelAttribute("user")UserVo userVo){
         try {
             return userService.saveOrUpdateUser(userVo);
@@ -77,6 +79,36 @@ public class UserAction {
         }
     }
 
+    /**
+     * @Description: 删除用户信息
+     * @param userVo
+     * @return boolean
+     */
+    @RequestMapping("/delete")
+    @ResponseBody
+    public Boolean delete(UserVo userVo){
+        try {
+            return userService.deleteUser(userVo);
+        }catch (Exception e){
+            log.error("删除失败",e.getMessage());
+            return false;
+        }
+    }
 
+    /**
+     * @Description: 验证用户名唯一
+     * @param userVo
+     * @return boolean
+     */
+    @RequestMapping("/checkLoginName")
+    @ResponseBody
+    public Boolean checkLoginName(UserVo userVo){
+        try {
+            return userService.checkLoginName(userVo);
+        }catch (Exception e){
+            log.error("验证失败",e.getMessage());
+            return false;
+        }
+    }
 
 }

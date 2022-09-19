@@ -3,6 +3,7 @@ package com.my.shirospringboot.shiro.service.impl;
 import com.my.shirospringboot.mapper.ShUsersMapper;
 import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.pojo.ShUsers;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -82,8 +84,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Boolean saveOrUpdateUser(UserVo userVo)throws Exception{
-        ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
-        if(!StringUtils.hasLength(shUsers.getId())){
+
+        if(!StringUtils.hasLength(userVo.getId())){
+            entryptPassword(userVo);//散列加密密码 用以获取散列之后的密文密码以及salt保存
+            userVo.setEnableFlag(SuperConstant.YES);//启用用户
+            ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
             //新增
             int insert = shUsersMapper.insert(shUsers);
             if(insert > 0){
@@ -91,6 +96,7 @@ public class UserServiceImpl implements UserService {
             }
             return false;
         }else{
+            ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
             //修改
             int update = shUsersMapper.updateById(shUsers);
             if(update > 0){
@@ -111,4 +117,30 @@ public class UserServiceImpl implements UserService {
         userVo.setSalt(newPwdMap.get("salt"));
     }
 
+
+    @Override
+    public Boolean deleteUser(UserVo userVo) throws Exception {
+        //此处还未考虑哪些情况下用户无法删除
+        ShUsers shUsers = (ShUsers)BeanUtils.toBean(userVo, ShUsers.class);
+        int delete = shUsersMapper.deleteById(shUsers);
+        if(delete > 0){
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Boolean checkLoginName(UserVo userVo) throws Exception {
+        Map<String,Object> columnMap = new HashMap<>();
+        if(!StringUtils.hasLength(userVo.getLoginName())){
+            throw new RuntimeException("用户名不能为空");
+        }
+        columnMap.put("loginName",userVo.getLoginName());
+        List<ShUsers> shUsersList = shUsersMapper.selectByMap(columnMap);
+        if(shUsersList.size() > 0){
+            //用户名已经存在
+            return true;
+        }
+        return false;
+    }
 }
