@@ -36,7 +36,7 @@ public class LoginAction {
 
     @RequestMapping("/login")
     public String loginPage(){
-        System.out.println(123);
+        log.info("登录页面");
         return "login";
     }
 

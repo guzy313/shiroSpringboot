@@ -9,6 +9,8 @@ import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.core.bridge.ShUsersBridgeService;
 import com.my.shirospringboot.shiro.core.bridge.impl.ShUsersBridgeServiceImpl;
+import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
+import com.my.shirospringboot.shiro.vo.UserVo;
 import com.my.shirospringboot.utils.BeanUtils;
 import com.my.shirospringboot.utils.StringUtils;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -30,6 +32,9 @@ class ShirospringbootApplicationTests {
 	@Autowired
 	private ShUsersBridgeServiceImpl shUsersBridgeService;
 
+	@Autowired
+	private UserServiceImpl userService;
+
 
 	@Test
 	void contextLoads() {
@@ -37,13 +42,14 @@ class ShirospringbootApplicationTests {
 
 
 	@Test
-	void addUser(){
-		ShUsers shUsers = new ShUsers();
-		shUsers.setLoginName("admin");
-		shUsers.setRealName("管理员");
-		shUsers.setNickName("测试昵称");
-		shUsers.setPassword("123");
-		shUsersMapper.insert(shUsers);
+	void addUser() throws Exception{
+		UserVo userVo = new UserVo();
+		userVo.setLoginName("admin");
+		userVo.setRealName("管理员");
+		userVo.setNickName("测试昵称");
+		userVo.setPassword("123");
+//		shUsersMapper.insert(shUsers);
+		userService.saveOrUpdateUser(userVo);
 
 	}
 

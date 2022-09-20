@@ -34,7 +34,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/db01?useUnicode=true&character=UTF-8&serverTimezone=UTC
     username: root
-    password: syq
+    password: gzy
     type: com.alibaba.druid.pool.DruidDataSource
 
 mybatis:
