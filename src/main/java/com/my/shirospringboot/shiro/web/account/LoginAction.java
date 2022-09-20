@@ -25,7 +25,7 @@ import java.util.Map;
  * @version 1.0
  * @Description 登录控制器
  */
-@RequestMapping("/loginAction")
+@RequestMapping("/login")
 @Controller
 public class LoginAction {
     private static final Logger log = LoggerFactory.getLogger(LoginAction.class);
@@ -34,11 +34,7 @@ public class LoginAction {
     @Autowired
     private UserServiceImpl userService;
 
-    @RequestMapping("/login")
-    public String loginPage(){
-        log.info("登录页面");
-        return "login";
-    }
+
 
 
     /**
@@ -74,6 +70,7 @@ public class LoginAction {
             modelAndView.addAllObjects(map);
         }
         if(shiroLoginFailure!=null){
+            log.info("登录失败");
             return modelAndView;
         }
         modelAndView.setViewName("redirect:/menus/system");

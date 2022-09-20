@@ -24,7 +24,7 @@ import java.util.List;
  * @Description
  */
 @Controller
-@RequestMapping("/userAction")
+@RequestMapping("/user")
 public class UserAction {
     private static final Logger log = LoggerFactory.getLogger(UserAction.class);
     @Autowired
@@ -36,7 +36,7 @@ public class UserAction {
      */
     @RequestMapping("/listInitialize")
     public String listInitialize(){
-        return "/user/user-listInitialize";
+        return "userManager";
     }
 
 

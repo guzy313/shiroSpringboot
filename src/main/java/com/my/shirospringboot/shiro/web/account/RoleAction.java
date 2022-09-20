@@ -30,7 +30,7 @@ import java.util.List;
  * @Description
  */
 @Controller
-@RequestMapping("/roleAction")
+@RequestMapping("/role")
 public class RoleAction {
     private static final Logger log = LoggerFactory.getLogger(RoleAction.class);
     @Autowired

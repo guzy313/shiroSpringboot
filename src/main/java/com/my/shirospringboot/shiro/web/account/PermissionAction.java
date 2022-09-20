@@ -26,7 +26,7 @@ import java.util.List;
  * @Description 权限控制器
  */
 @Controller
-@RequestMapping("/permissionAction")
+@RequestMapping("/permission")
 public class PermissionAction {
     private static final Logger log = LoggerFactory.getLogger(PermissionAction.class);
     private PermissionServiceImpl permissionService;

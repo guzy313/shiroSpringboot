@@ -6,8 +6,8 @@
 </head>
 <body>
     <h1>登录页面</h1>
-    <form method="post" th:action="@{/loginAction/usersLogin}">
-        用户名:<input name="userName" type="text"><br/>
+    <form method="post" th:action="@{/login/usersLogin}">
+        用户名:<input name="loginName" type="text"><br/>
         密码:<input name="password" type="password"><br/>
         <button type="submit">登录</button>
     </form>

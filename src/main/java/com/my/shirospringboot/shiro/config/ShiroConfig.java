@@ -113,9 +113,9 @@ public class ShiroConfig {
             //设置过滤地址
             shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainProperties);
             //设置登录地址
-            shiroFilterFactoryBean.setLoginUrl("/loginAction/login");
+            shiroFilterFactoryBean.setLoginUrl("/account/login");
             //设置未授权访问跳转地址
-            shiroFilterFactoryBean.setUnauthorizedUrl("/loginAction/login");
+            shiroFilterFactoryBean.setUnauthorizedUrl("/account/login");
         return shiroFilterFactoryBean;
     }
 
