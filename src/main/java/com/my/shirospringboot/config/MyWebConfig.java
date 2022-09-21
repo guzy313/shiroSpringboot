@@ -18,16 +18,16 @@ public class MyWebConfig implements WebMvcConfigurer {
                 excludePathPatterns("/static/","/templates","/templates/error","/static/js","/static/css");
     }
 
-//    /**
-//     * @Description: 过滤静态资源
-//     * @param registry
-//     */
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        registry.addResourceHandler("/**")
-//                .addResourceLocations("classpath:/static/");
-//
-//    }
+    /**
+     * @Description: 过滤静态资源
+     * @param registry
+     */
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/**")
+                .addResourceLocations("classpath:/static/");
+
+    }
 
 
 
