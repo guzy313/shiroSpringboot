@@ -2,10 +2,35 @@
 <html lang="en" xmlns:th=http://www.thymeleaf.org ; >
 <head>
     <meta charset="UTF-8">
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="cache-control" content="no-cache,must-revalidate" />
+    <meta http-equiv="pragram" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <!-- css -->
+    <!--引入 element-ui 的样式，-->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- js -->
+    <script  type="text/javascript" th:src="@{/js/jquery-3.3.1.js}"></script>
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
     <title>主页</title>
 </head>
 <body>
     <h1>主页面</h1>
     <a th:href="@{/user/listInitialize}">用户管理页面</a>
+    <el-container>
+        <!-- 头部区域 -->
+        <el-header></el-header>
+        <el-container>
+            <!-- 侧边栏区域 -->
+            <el-aside></el-aside>
+            <!-- 右侧主体区域 -->
+            <el-main></el-main>
+        </el-container>
+    </el-container>
 </body>
 </html>
