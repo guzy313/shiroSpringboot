@@ -11,6 +11,40 @@
     <!-- css -->
     <!--引入 element-ui 的样式，-->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        .el-header, .el-footer {
+            background-color: #B3C0D1;
+            color: #333;
+            text-align: center;
+            line-height: 60px;
+        }
+        .el-aside {
+            background-color: #D3DCE6;
+            color: #333;
+            text-align: center;
+            line-height: 200px;
+        }
+
+        .el-main {
+            background-color: #E9EEF3;
+            color: #333;
+            text-align: center;
+            line-height: 160px;
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+
+        .el-container:nth-child(5) .el-aside,
+        .el-container:nth-child(6) .el-aside {
+            line-height: 260px;
+        }
+
+        .el-container:nth-child(7) .el-aside {
+            line-height: 320px;
+        }
+    </style>
     <!-- js -->
     <script  type="text/javascript" th:src="@{/js/jquery-3.3.1.js}"></script>
     <script src="https://unpkg.com/vue@2.7.10"></script>
@@ -20,17 +54,40 @@
     <title>主页</title>
 </head>
 <body>
-    <h1>主页面</h1>
-    <a th:href="@{/user/listInitialize}">用户管理页面</a>
-    <el-container>
-        <!-- 头部区域 -->
-        <el-header></el-header>
+    <!--<h1>主页面</h1>-->
+    <!--<a th:href="@{/user/listInitialize}">用户管理页面</a>-->
+    <div id="app">
+        <el-button @click="visible = true">Button</el-button>
+        <el-dialog :visible.sync="visible" title="Hello world">
+            <p>Try Element</p>
+        </el-dialog>
         <el-container>
-            <!-- 侧边栏区域 -->
-            <el-aside></el-aside>
-            <!-- 右侧主体区域 -->
-            <el-main></el-main>
+            <el-header>header1</el-header>
+            <el-aside>
+                aside1
+            </el-aside>
+            <el-container>
+                <el-main>
+                    main1
+                </el-main>
+
+                <el-footer>
+                    footer1
+                </el-footer>
+            </el-container>
+
         </el-container>
-    </el-container>
+    </div>
 </body>
+<script type="text/javascript" >
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                visible: false
+            }
+        }
+    })
+
+</script>
 </html>
