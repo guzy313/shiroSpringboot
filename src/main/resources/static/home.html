@@ -76,6 +76,27 @@
         .el-menu-item,.el-submenu{
             text-align: left !important;
         }
+        .main_tab{
+            padding-left: 10px;
+            color: #409eff;
+            height: 30px;
+        }
+        .main_tab{
+            padding-top: 10px;
+            padding-left: 10px;
+            color: #409eff;
+            height: 30px;
+            border-bottom: 1px solid #e4e7ed;
+        }
+        .main_tab_span{
+            /*border-left: 1px solid #e4e7ed;*/
+            border-right: 1px solid #e4e7ed;
+            /*border-top: 1px solid #e4e7ed;*/
+            /*border-bottom: 1px solid #e4e7ed;*/
+            color: #409eff;
+            text-align: center;
+            padding:5px;
+        }
     </style>
     <title>主页</title>
 </head>
@@ -144,8 +165,11 @@
 
                 </div>
                 <div class="container" style="width: calc(100% - 203px);height: 100%;">
+                    <div class="main_tab">
+                        <span class="main_tab_span">用户管理</span>
+                    </div>
                     <div class="main" style="width: 100%;height: 100%;">
-                        <iframe style="width: 100%;height: 100%" th:src="@{/user/listInitialize}" scrolling="no" frameborder="0"></iframe>
+                        <iframe id="pageIframe" style="width: 100%;height: 100%" th:src="@{/user/listInitialize}" scrolling="no" frameborder="0"></iframe>
                     </div>
                     <!--<el-footer>footer1</el-footer>-->
                 </div>
