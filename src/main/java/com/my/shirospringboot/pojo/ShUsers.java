@@ -24,7 +24,7 @@ public class ShUsers {
     //加密因子
     private String salt;
     //性别
-    private Char sex;
+    private String sex;
     //邮政编码
     private String zipCode;
     //地址
@@ -91,11 +91,11 @@ public class ShUsers {
         this.salt = salt;
     }
 
-    public Char getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(Char sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 

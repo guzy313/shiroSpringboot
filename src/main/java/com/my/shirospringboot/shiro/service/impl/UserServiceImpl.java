@@ -1,10 +1,8 @@
 package com.my.shirospringboot.shiro.service.impl;
 
 import com.my.shirospringboot.mapper.ShUsersMapper;
-import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
-import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.shiro.vo.UserVo;
@@ -16,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,15 +57,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<ShUsers> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception {
+    public List<UserVo> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception {
+
+        List<ShUsers> list = null;
         //通过用户查询对应角色
         if(StringUtils.hasLength(userVo.getId())){
-            List<ShUsers> list = shUsersMapper.findUserById(userVo.getId());
-            return list;
+            list = shUsersMapper.findUserById(userVo.getId());
+
+        }else{
+            //直接查询全部角色列表
+            list = shUsersMapper.findAll();
         }
-        //直接查询全部角色列表
-        List<ShUsers> list = shUsersMapper.findAll();
-        return list;
+
+        //实现分页的序号功能
+        List<UserVo> voList = new ArrayList<>();
+        if(list.size() > 0){
+            int rowRun = 1;
+            for (ShUsers u:list) {
+                if(rowRun >= rows * (page - 1) + 1 && rowRun <= rows * page && rowRun <= list.size()){
+                    UserVo userVoHere = (UserVo) BeanUtils.toBeanParent(u, UserVo.class);
+                    userVoHere.setRowNo(rowRun);
+                    voList.add(userVoHere);
+                }
+                rowRun ++ ;
+            }
+        }
+
+        return voList;
     }
 
     @Override

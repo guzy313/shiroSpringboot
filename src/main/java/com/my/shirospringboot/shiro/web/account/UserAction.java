@@ -6,7 +6,6 @@ import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
-import com.mysql.cj.protocol.a.NativePacketPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,15 +46,16 @@ public class UserAction {
      * @param page
      * @return map
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list.action")
     @ResponseBody
     public ModelMap list(UserVo userVo, Integer rows, Integer page){
         try {
-            List<ShUsers> list =  userService.findUserList(userVo,rows,page);
+            List<UserVo> list =  userService.findUserList(userVo,rows,page);
             Long total = userService.countUserList(userVo);
             ModelMap modelMap = new ModelMap();
             modelMap.addAttribute("data",list);
             modelMap.addAttribute("total",total);
+            modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){
             log.error("查询用户错误",e.getMessage());
@@ -68,7 +68,7 @@ public class UserAction {
      * @param userVo
      * @return boolean
      */
-    @RequestMapping("/save")
+    @RequestMapping("/save.action")
     @ResponseBody
     public Boolean save(@ModelAttribute("user")UserVo userVo){
         try {
@@ -84,7 +84,7 @@ public class UserAction {
      * @param userVo
      * @return boolean
      */
-    @RequestMapping("/delete")
+    @RequestMapping("/delete.action")
     @ResponseBody
     public Boolean delete(UserVo userVo){
         try {

@@ -16,13 +16,13 @@ import java.util.List;
 @Mapper
 public interface ShUsersMapper extends BaseMapper<ShUsers> {
 
-    @Select("select * from sh_users ")
+    @Select("select * from sh_users order by loginName ")
     List<ShUsers> findAll();
 
-    @Select("select * from sh_users where id = #{id} ")
+    @Select("select * from sh_users where id = #{id}  order by loginName ")
     List<ShUsers> findUserById(String id);
 
-    @Select("select * from sh_users where loginName = #{loginName} ")
+    @Select("select * from sh_users where loginName = #{loginName}  order by loginName ")
     List<ShUsers> findShUserByName(String loginName);
 
     @Update("update sh_users set password = #{password} where id = #{id} ")

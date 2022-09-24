@@ -30,7 +30,7 @@ public interface UserService {
      * @return
      * @throws Exception
      */
-    List<ShUsers> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception;
+    List<UserVo> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception;
 
     /**
      * @Description: 查询用户分页前总数

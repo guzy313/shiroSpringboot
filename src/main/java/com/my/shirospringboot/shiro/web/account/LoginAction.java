@@ -44,7 +44,7 @@ public class LoginAction {
      */
     @RequestMapping("/usersLogin")
     public ModelAndView usersLogin(LoginVo loginVo){
-        ModelAndView modelAndView = new ModelAndView("/account/login");
+        ModelAndView modelAndView = new ModelAndView("login");
         String shiroLoginFailure = null;
         Map<String,String> map = new HashMap<>();
         try {
