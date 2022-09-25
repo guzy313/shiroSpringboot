@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.alibaba.fastjson.JSON;
 import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.service.UserService;
@@ -9,12 +10,12 @@ import com.my.shirospringboot.shiro.vo.UserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -65,12 +66,14 @@ public class UserAction {
 
     /**
      * @Description: 新增修改用户信息
-     * @param userVo
+     * @param
      * @return boolean
      */
     @RequestMapping("/save.action")
     @ResponseBody
-    public Boolean save(@ModelAttribute("user")UserVo userVo){
+    public Boolean save(HttpServletRequest request){
+        String userVoJsonStr = request.getParameter("userVo");
+        UserVo userVo = JSON.parseObject(userVoJsonStr,UserVo.class);
         try {
             return userService.saveOrUpdateUser(userVo);
         }catch (Exception e){
@@ -79,14 +82,34 @@ public class UserAction {
         }
     }
 
+
+//    /**
+//     * @Description: 新增修改用户信息
+//     * @param
+//     * @return boolean
+//     */
+//    @ResponseBody
+//    @RequestMapping(value = "save.action", produces = "application/json;charset=UTF-8")
+//    public Boolean save(@RequestBody UserVo userVo){
+//
+//        try {
+//            return userService.saveOrUpdateUser(userVo);
+//        }catch (Exception e){
+//            log.error("保存失败",e.getMessage());
+//            return false;
+//        }
+//    }
+
     /**
      * @Description: 删除用户信息
-     * @param userVo
+     * @param
      * @return boolean
      */
     @RequestMapping("/delete.action")
     @ResponseBody
-    public Boolean delete(UserVo userVo){
+    public Boolean delete(HttpServletRequest request){
+        String userVoJsonStr = request.getParameter("userVo");
+        UserVo userVo = JSON.parseObject(userVoJsonStr,UserVo.class);
         try {
             return userService.deleteUser(userVo);
         }catch (Exception e){
@@ -97,12 +120,14 @@ public class UserAction {
 
     /**
      * @Description: 验证用户名唯一
-     * @param userVo
+     * @param
      * @return boolean
      */
     @RequestMapping("/checkLoginName")
     @ResponseBody
-    public Boolean checkLoginName(UserVo userVo){
+    public Boolean checkLoginName(HttpServletRequest request){
+        String userVoJsonStr = request.getParameter("userVo");
+        UserVo userVo = JSON.parseObject(userVoJsonStr,UserVo.class);
         try {
             return userService.checkLoginName(userVo);
         }catch (Exception e){

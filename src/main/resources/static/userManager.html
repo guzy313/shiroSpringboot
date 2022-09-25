@@ -290,8 +290,9 @@
         return new Promise(function (resolve, reject) {
             $.ajax({
                 url: '/user/save.action',
-                data: {user:JSON.stringify(formdata)},
+                data: {userVo:JSON.stringify(formdata)},
                 dataType: 'json',
+                type:'post',
                 success: function (res) {
                     if (res) {
                         resolve(res)

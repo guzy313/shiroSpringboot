@@ -43,16 +43,24 @@ class ShirospringbootApplicationTests {
 
 	@Test
 	void addUser() throws Exception{
-		for (int i = 0; i < 10; i++) {
-			UserVo userVo = new UserVo();
-			userVo.setLoginName("test"+i);
-			userVo.setRealName("测试用户"+i);
-			userVo.setNickName("测试昵称"+i);
-			userVo.setPassword("123");
-			userVo.setSex("男");
+		UserVo userVo = new UserVo();
+		userVo.setLoginName("admin");
+		userVo.setRealName("管理员");
+		userVo.setNickName("adminHH");
+		userVo.setPassword("123");
+		userVo.setSex("男");
 //		shUsersMapper.insert(shUsers);
-			userService.saveOrUpdateUser(userVo);
-		}
+		userService.saveOrUpdateUser(userVo);
+//		for (int i = 0; i < 10; i++) {
+//			UserVo userVo = new UserVo();
+//			userVo.setLoginName("test"+i);
+//			userVo.setRealName("测试用户"+i);
+//			userVo.setNickName("测试昵称"+i);
+//			userVo.setPassword("123");
+//			userVo.setSex("男");
+////		shUsersMapper.insert(shUsers);
+//			userService.saveOrUpdateUser(userVo);
+//		}
 
 	}
 

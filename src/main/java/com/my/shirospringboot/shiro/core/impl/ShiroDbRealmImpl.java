@@ -50,7 +50,8 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
             throw new UnknownAccountException("用户不存在");
         }
         //构建认证令牌对象
-        ShiroUser shiroUser = (ShiroUser)BeanUtils.toBean(user,ShiroUser.class);
+        ShiroUser shiroUser = new ShiroUser();
+        BeanUtils.copyPropertiesIgnoreNull(user,shiroUser);
         List<String> permissionIds = shUsersBridgeService.findPermissionIdsByUserId(user.getId());
         shiroUser.setPermissionIds(permissionIds);
         //构建认证信息对象 ! 此处把用户的完整信息shiroUser放入认证信息对象
