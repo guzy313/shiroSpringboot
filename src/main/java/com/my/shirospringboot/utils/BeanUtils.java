@@ -1,5 +1,6 @@
 package com.my.shirospringboot.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -88,6 +89,32 @@ public class BeanUtils {
 
     }
 
+    /**
+     * 只考虑本类，不考虑继承父类
+     * @param list
+     * @return
+     */
+    public static List<Map<String,Object>> objectListToMapList(List<?> list){
+        List<Map<String,Object>> listResult = new ArrayList<>();
+        for (Object o:list) {
+            listResult.add(BeanUtils.objectToMap(o));
+        }
+        return listResult;
+    }
+
+    /**
+     * 只考虑本类，不考虑继承父类
+     * @param o
+     * @return
+     */
+    public static Map<String,Object> objectToMap(Object o){
+        Map<String,Object> map = new HashMap<>();
+        Field[] declaredFields = o.getClass().getDeclaredFields();
+        for (Field f:declaredFields ) {
+            map.put(f.getName(),ObjectUtils.getFieldValueByName(f.getName(), o));
+        }
+        return map;
+    }
 
     /**
      * @Description: 复制对象,将src复制给target,忽视null值字段

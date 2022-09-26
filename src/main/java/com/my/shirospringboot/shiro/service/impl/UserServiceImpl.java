@@ -8,6 +8,7 @@ import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.shiro.vo.UserVo;
 import com.my.shirospringboot.utils.BeanUtils;
 import com.my.shirospringboot.utils.DigestUtil;
+import com.my.shirospringboot.utils.PageUtils;
 import com.my.shirospringboot.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,33 +58,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserVo> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception {
-
+    public List<Map<String,Object>> findUserList(UserVo userVo, Integer pageSize, Integer pageIndex,String keyword) throws Exception {
+        List<Map<String,Object>> resultList = null;
         List<ShUsers> list = null;
         //通过用户查询对应角色
         if(StringUtils.hasLength(userVo.getId())){
             list = shUsersMapper.findUserById(userVo.getId());
-
+            //转map集合
+            resultList = BeanUtils.objectListToMapList(list);
+            return resultList;
         }else{
             //直接查询全部角色列表
-            list = shUsersMapper.findAll();
-        }
-
-        //实现分页的序号功能
-        List<UserVo> voList = new ArrayList<>();
-        if(list.size() > 0){
-            int rowRun = 1;
-            for (ShUsers u:list) {
-                if(rowRun >= rows * (page - 1) + 1 && rowRun <= rows * page && rowRun <= list.size()){
-                    UserVo userVoHere = (UserVo) BeanUtils.toBeanParent(u, UserVo.class);
-                    userVoHere.setRowNo(rowRun);
-                    voList.add(userVoHere);
-                }
-                rowRun ++ ;
+            if(StringUtils.hasLength(keyword)){
+                list = shUsersMapper.findByName(keyword);
+            }else{
+                list = shUsersMapper.findAll();
             }
+            if(list.size() > 0){
+                //实现分页的序号功能
+                resultList = PageUtils.paging(list,pageSize,pageIndex);
+            }
+            return resultList;
         }
 
-        return voList;
+
+
+
     }
 
     @Override
@@ -138,6 +138,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean deleteUser(UserVo userVo) throws Exception {
         //此处还未考虑哪些情况下用户无法删除
+        if("admin".equals(userVo.getLoginName())){
+            throw new RuntimeException("管理员无法进行删除操作");
+        }
         ShUsers shUsers = (ShUsers)BeanUtils.toBean(userVo, ShUsers.class);
         int delete = shUsersMapper.deleteById(shUsers);
         if(delete > 0){

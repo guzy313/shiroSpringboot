@@ -7,6 +7,7 @@ import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
+import com.my.shirospringboot.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -42,16 +44,20 @@ public class UserAction {
 
     /**
      * @Description: 用户的分页查询
-     * @param userVo
-     * @param rows
-     * @param page
+     * @param request
+     * @param pageSize
+     * @param pageIndex
      * @return map
      */
     @RequestMapping("/list.action")
     @ResponseBody
-    public ModelMap list(UserVo userVo, Integer rows, Integer page){
+    public ModelMap list(HttpServletRequest request, Integer pageSize, Integer pageIndex){
+        String id = request.getParameter("id");
+        String keyword = request.getParameter("keyword");
+        UserVo userVo = new UserVo();//防止空指针
+        userVo.setId(id);
         try {
-            List<UserVo> list =  userService.findUserList(userVo,rows,page);
+            List<Map<String,Object>> list =  userService.findUserList(userVo,pageSize,pageIndex,keyword);
             Long total = userService.countUserList(userVo);
             ModelMap modelMap = new ModelMap();
             modelMap.addAttribute("data",list);
@@ -108,8 +114,12 @@ public class UserAction {
     @RequestMapping("/delete.action")
     @ResponseBody
     public Boolean delete(HttpServletRequest request){
-        String userVoJsonStr = request.getParameter("userVo");
-        UserVo userVo = JSON.parseObject(userVoJsonStr,UserVo.class);
+        String id = request.getParameter("id");
+        if(!StringUtils.hasLength(id)){
+            throw new RuntimeException("id不能为空");
+        }
+        UserVo userVo = new UserVo();
+        userVo.setId(id);
         try {
             return userService.deleteUser(userVo);
         }catch (Exception e){

@@ -47,11 +47,13 @@
 </head>
 <body>
     <div id="app">
+        <el-input id="keyword" v-model="keyword"  placeholder="请输入要查询的用户"></el-input>
         <div class="button_div">
-            <el-button type="primary" icon="el-icon-edit" @click="dialogVisible = true"></el-button>
-            <el-button type="primary" icon="el-icon-share"></el-button>
-            <el-button type="primary" icon="el-icon-delete"></el-button>
-            <el-button type="primary" icon="el-icon-search">搜索</el-button>
+
+            <el-button type="primary" icon="el-icon-plus" @click="edit('add')"></el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="edit('edit')"></el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="del"></el-button>
+            <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
         </div>
         <template>
             <el-table
@@ -99,7 +101,7 @@
             <el-pagination align='center'
                            @size-change="handleSizeChange"
                            @current-change="handleCurrentChange"
-                           :current-page="currentPage"
+                           :current-page="pageIndex"
                            :page-sizes="[1,5,10,20]"
                            :page-size="pageSize"
                            layout="total, sizes, prev, pager, next, jumper"
@@ -119,8 +121,8 @@
                 <el-form-item label="登录名">
                     <el-input v-model="form.loginName"></el-input>
                 </el-form-item>
-                <el-form-item label="密码">
-                    <el-input v-model="form.password"></el-input>
+                <el-form-item label="密码" v-if="isAdd">
+                    <el-input v-model="form.password"  show-password ></el-input>
                 </el-form-item>
                 <el-form-item label="真实姓名">
                     <el-input v-model="form.realName"></el-input>
@@ -169,13 +171,15 @@
         el: '#app',
         data: function() {
             return {
-                currentPage:1,
+                pageIndex:1,
                 pageSize:10,
                 activeName: 'second',
                 tableData: [],
                 tableTotal:0,
                 multipleSelection: [],
                 dialogVisible:false,
+                isAdd:true,//是否新增(新增则显示密码输入，修改不显示)
+                keyword:'',
                 form: {
                     id:'',
                     loginName:'',
@@ -218,12 +222,11 @@
             //当前页改变时触发 跳转其他页
             handleCurrentChange(val) {
                 console.log(`当前页: ${val}`);
-                this.currentPage = val;
+                this.pageIndex = val;
                 this.searchList();
             },
             searchList(){
-                search(this.pageSize,this.currentPage).then((res) => {
-                    console.log("123", res.data)
+                search(this.pageSize,this.pageIndex).then((res) => {
                     this.tableData = res.data //将前端的数据data赋上后端的值
                     this.tableTotal = res.total;
                 }).catch(e => {
@@ -234,6 +237,7 @@
                 save(this.form).then((res) => {
                     this.$message('保存成功');
                     this.dialogVisible = false;
+                    this.searchList();
                 }).catch(e => {
                     this.$message('保存失败');
                     console.log(e + '公共的err')
@@ -242,6 +246,50 @@
                 console.log('submit!');
 
             },
+            edit(e){
+                if(e == "add"){
+                    this.form = {};
+                    this.isAdd = true;
+                    this.dialogVisible = true;
+                }else{
+
+                    if(this.multipleSelection.length != 1){
+                        this.$message('请选择一条进行编辑');
+                        return ;
+                    }
+                    editEcho(this.multipleSelection[0].id).then((res) => {
+                        this.form = res.data[0]; //将前端的数据data赋上后端的值
+                        this.isAdd = false;
+                        this.dialogVisible = true;
+                    }).catch(e => {
+                        console.log(e + '公共的err')
+                    })
+                }
+            },
+            del(e){
+                if(this.multipleSelection.length != 1){
+                    this.$message('请选择一条进行删除');
+                    return ;
+                }
+                if(this.multipleSelection[0].loginName == "admin"){
+                    this.$message('无法删除管理员');
+                    return ;
+                }
+                //确定删除
+                this.$confirm('确定要删除这条记录吗？')
+                    .then(_ => {
+
+                        delById(this.multipleSelection[0].id).then((res) => {
+                            this.$message('删除成功');
+                            this.searchList();
+                        }).catch(e => {
+                            this.$message('删除失败');
+                        })
+
+                    }).catch(_ => {});
+            },
+
+
             handleClose(done) {
                 //关闭保存页面
                 this.$confirm('确认关闭？')
@@ -252,8 +300,7 @@
             }
         },
         mounted: function () {
-            search(this.pageSize,this.currentPage).then((res) => {
-                console.log("123", res.data)
+            search(this.pageSize,this.pageIndex).then((res) => {
                 this.tableData = res.data //将前端的数据data赋上后端的值
                 this.tableTotal = res.total;
             }).catch(e => {
@@ -266,7 +313,12 @@
         return new Promise(function (resolve, reject) {
             $.ajax({
                 url: '/user/list.action',
-                data: {userVo:{},rows:pageSize,page:pageIndex},
+                data: {
+                    userVo:{},
+                    pageSize:pageSize,
+                    pageIndex:pageIndex,
+                    keyword:$("#keyword").val()
+                },
                 dataType: 'json',
                 success: function (res) {
                     var data = res.data;
@@ -285,12 +337,59 @@
 
     }
 
+    /**
+     * 编辑回显
+     * @param id
+     * @param pageIndex
+     * @returns {Promise<unknown>}
+     */
+    function editEcho(id){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/user/list.action',
+                data: {id:id},
+                dataType: 'json',
+                success: function (res) {
+                    var data = res.data;
+                    if (res.success) {
+                        resolve(res)
+                    } else {
+                        reject(res.message)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+
+    }
+
     function save(formdata){
-        // TODO
         return new Promise(function (resolve, reject) {
             $.ajax({
                 url: '/user/save.action',
                 data: {userVo:JSON.stringify(formdata)},
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+    }
+    function delById(id){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/user/delete.action',
+                data: {id:id},
                 dataType: 'json',
                 type:'post',
                 success: function (res) {

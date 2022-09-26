@@ -6,6 +6,7 @@ import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -25,12 +26,12 @@ public interface UserService {
     /**
      * @Description: 查询用户分页列表
      * @param userVo
-     * @param rows
-     * @param page
-     * @return
+     * @param pageSize
+     * @param pageIndex
+     * @return List<Map<String,Object>>
      * @throws Exception
      */
-    List<UserVo> findUserList(UserVo userVo, Integer rows, Integer page) throws Exception;
+    List<Map<String,Object>> findUserList(UserVo userVo, Integer pageSize, Integer pageIndex,String keyword) throws Exception;
 
     /**
      * @Description: 查询用户分页前总数
