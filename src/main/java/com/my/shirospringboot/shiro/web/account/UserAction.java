@@ -88,8 +88,8 @@ public class UserAction {
 //     * @param
 //     * @return boolean
 //     */
+//    @RequestMapping("/save.action")
 //    @ResponseBody
-//    @RequestMapping(value = "save.action", produces = "application/json;charset=UTF-8")
 //    public Boolean save(@RequestBody UserVo userVo){
 //
 //        try {
