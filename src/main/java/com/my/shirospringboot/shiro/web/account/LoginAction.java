@@ -81,13 +81,15 @@ public class LoginAction {
      * @Description 登出方法
      * @return 登录页面跳转
      */
-    @RequestMapping("/usersLoginOut")
-    public String usersLoginOut(){
+    @RequestMapping("/usersLoginOut.action")
+    public ModelAndView usersLoginOut(){
+        ModelAndView modelAndView = new ModelAndView("login");
         Subject subject = SecurityUtils.getSubject();
         if(subject != null){
             subject.logout();
+            modelAndView.addObject("message","登出成功");
         }
-        return "/account/login";
+        return modelAndView;
     }
 
     /**
