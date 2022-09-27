@@ -19,8 +19,7 @@ public interface ShUsersMapper extends BaseMapper<ShUsers> {
     @Select("select * from sh_users order by loginName ")
     List<ShUsers> findAll();
 
-    //TODO BUG
-    @Select("select * from sh_users where loginName like '%#{keyword}%' order by loginName ")
+    @Select("select * from sh_users where loginName like CONCAT('%',#{keyword},'%') order by loginName ")
     List<ShUsers> findByName(String keyword);
 
     @Select("select * from sh_users where id = #{id}  order by loginName ")

@@ -42,14 +42,17 @@
             border-radius: 10px;
             background: #FFFFFF;
         }
+        .keyword{
+            width:300px;
+        }
 
     </style>
 </head>
 <body>
     <div id="app">
-        <el-input id="keyword" v-model="keyword"  placeholder="请输入要查询的用户"></el-input>
-        <div class="button_div">
 
+        <div class="button_div">
+            <el-input class="keyword" id="keyword" v-model="keyword"  placeholder="请输入要查询的用户"></el-input>
             <el-button type="primary" icon="el-icon-plus" @click="edit('add')"></el-button>
             <el-button type="primary" icon="el-icon-edit" @click="edit('edit')"></el-button>
             <el-button type="primary" icon="el-icon-delete" @click="del"></el-button>
