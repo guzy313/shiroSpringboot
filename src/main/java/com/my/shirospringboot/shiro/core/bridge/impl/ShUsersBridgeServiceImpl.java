@@ -75,6 +75,13 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
         return permissionNames;
     }
 
+
+    @Override
+    public List<ShPermission> findPermissionsByUserId(String userId) {
+        List<ShPermission> shPermissionList = shUserAdapter.findPermissionsByUserId(userId);
+        return shPermissionList;
+    }
+
     @Override
     public List<String> findPermissionLabelsByUserId(String userId) {
         List<ShPermission> shPermissionList = shUserAdapter.findPermissionsByUserId(userId);

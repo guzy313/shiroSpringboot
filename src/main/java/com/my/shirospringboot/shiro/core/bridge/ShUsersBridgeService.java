@@ -1,6 +1,7 @@
 package com.my.shirospringboot.shiro.core.bridge;
 
 import com.my.shirospringboot.mapper.ShUsersMapper;
+import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import org.apache.shiro.authz.AuthorizationInfo;
@@ -53,6 +54,13 @@ public interface ShUsersBridgeService {
      * @return
      */
     List<String> findPermissionNamesByUserId(String userId);
+
+    /**
+     * @Description 通过用户ID查询 权限集合
+     * @param userId
+     * @return
+     */
+    List<ShPermission> findPermissionsByUserId(String userId);
 
     /**
      * @Description 通过用户ID查询 权限标签集合

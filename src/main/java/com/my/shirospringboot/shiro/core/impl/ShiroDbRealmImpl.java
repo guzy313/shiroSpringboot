@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.core.impl;
 
+import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
@@ -53,7 +54,9 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
         ShiroUser shiroUser = new ShiroUser();
         BeanUtils.copyPropertiesIgnoreNull(user,shiroUser);
         List<String> permissionIds = shUsersBridgeService.findPermissionIdsByUserId(user.getId());
+        List<ShPermission> permissionIdList = shUsersBridgeService.findPermissionsByUserId(user.getId());
         shiroUser.setPermissionIds(permissionIds);
+        shiroUser.setPermissionList(permissionIdList);
         //构建认证信息对象 ! 此处把用户的完整信息shiroUser放入认证信息对象
         return new SimpleAuthenticationInfo(shiroUser,
                 shiroUser.getPassword(), ByteSource.Util.bytes(shiroUser.getSalt()),this.getName());

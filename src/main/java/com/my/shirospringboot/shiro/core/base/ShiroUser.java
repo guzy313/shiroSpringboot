@@ -2,6 +2,7 @@ package com.my.shirospringboot.shiro.core.base;
 
 import com.alibaba.druid.sql.visitor.functions.Char;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.my.shirospringboot.pojo.ShPermission;
 import org.springframework.data.annotation.Transient;
 
 import java.util.List;
@@ -51,7 +52,13 @@ public class ShiroUser {
     //是否有效
     private String enableFlag;
 
+
+
     //权限列表
+    @Transient
+    private List<ShPermission> permissionList;
+
+    //权限id列表
     @Transient
     private List<String> permissionIds;
 
@@ -176,6 +183,14 @@ public class ShiroUser {
         this.enableFlag = enableFlag;
     }
 
+    public List<ShPermission> getPermissionList() {
+        return permissionList;
+    }
+
+    public void setPermissionList(List<ShPermission> permissionList) {
+        this.permissionList = permissionList;
+    }
+
     public List<String> getPermissionIds() {
         return permissionIds;
     }
@@ -202,6 +217,7 @@ public class ShiroUser {
                 ", job='" + job + '\'' +
                 ", sort=" + sort +
                 ", enableFlag='" + enableFlag + '\'' +
+                ", permissionList=" + permissionList +
                 ", permissionIds=" + permissionIds +
                 '}';
     }
