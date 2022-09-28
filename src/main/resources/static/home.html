@@ -156,8 +156,8 @@
                                     <i class="el-icon-setting"></i>
                                     <span>{{item.permissionName}}</span>
                                 </template>
-                                <el-menu-item-group :model="menuLv2Data" v-for="(item1,index1) in menuLv2Data" v-if="item1.id == item.parentId" :key="index1">
-                                    <el-menu-item index="1-1" onclick="my.showTab(item1.permissionName,item1.path)">{{item1.permissionName}}</el-menu-item>
+                                <el-menu-item-group :model="menuLv2Data" v-for="(item1,index1) in menuLv2Data" v-if="item1.parentId == item.id" :key="index1">
+                                    <el-menu-item index="1-1" onclick="my.showTab('item1.permissionName','item1.path')">{{item1.permissionName}}</el-menu-item>
 <!--                                    <el-menu-item index="1-2">角色管理</el-menu-item>-->
 <!--                                    <el-menu-item index="1-3">权限管理</el-menu-item>-->
 <!--                                    <el-menu-item index="1-4"><a th:href="@{/user/listInitialize}">用户管理页面</a></el-menu-item>-->
@@ -175,7 +175,7 @@
                         <span class="main_tab_span">用户管理</span>
                     </div>
                     <div class="main" style="width: 100%;height: 100%;">
-                        <iframe id="pageIframe" style="width: 100%;height: 100%"  scrolling="no" frameborder="0"></iframe>
+                        <iframe id="pageIframe" style="width: 100%;height: 100%" th:src="@{/user/listInitialize}" scrolling="no" frameborder="0"></iframe>
                     </div>
                     <!--<el-footer>footer1</el-footer>-->
                 </div>
