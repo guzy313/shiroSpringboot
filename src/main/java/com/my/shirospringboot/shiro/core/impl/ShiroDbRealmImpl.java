@@ -53,13 +53,21 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
         //构建认证令牌对象
         ShiroUser shiroUser = new ShiroUser();
         BeanUtils.copyPropertiesIgnoreNull(user,shiroUser);
-        List<String> permissionIds = shUsersBridgeService.findPermissionIdsByUserId(user.getId());
-        List<ShPermission> permissionIdList = shUsersBridgeService.findPermissionsByUserId(user.getId());
-        shiroUser.setPermissionIds(permissionIds);
-        shiroUser.setPermissionList(permissionIdList);
-        //构建认证信息对象 ! 此处把用户的完整信息shiroUser放入认证信息对象
-        return new SimpleAuthenticationInfo(shiroUser,
-                shiroUser.getPassword(), ByteSource.Util.bytes(shiroUser.getSalt()),this.getName());
+        if(SuperConstant.ADMINISTRATOR_NAME.equals(shiroUser.getLoginName())){
+            //管理员权限
+            List<ShPermission> permissionIdList = shUsersBridgeService.findAllPermissions();
+            shiroUser.setPermissionList(permissionIdList);
+            //构建认证信息对象 ! 此处把用户的完整信息shiroUser放入认证信息对象
+            return new SimpleAuthenticationInfo(shiroUser,
+                    shiroUser.getPassword(), ByteSource.Util.bytes(shiroUser.getSalt()),this.getName());
+         }else{
+            List<ShPermission> permissionIdList = shUsersBridgeService.findPermissionsByUserId(user.getId());
+            shiroUser.setPermissionList(permissionIdList);
+            //构建认证信息对象 ! 此处把用户的完整信息shiroUser放入认证信息对象
+            return new SimpleAuthenticationInfo(shiroUser,
+                    shiroUser.getPassword(), ByteSource.Util.bytes(shiroUser.getSalt()),this.getName());
+        }
+
     }
 
     /**

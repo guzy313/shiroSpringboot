@@ -24,6 +24,14 @@ public interface ShUserAdapter {
      */
     List<ShUsers> findUserByLoginName(String loginName);
 
+
+    /**
+     * @Description 查询所有权限对象列表
+     * @param
+     * @return
+     */
+    List<ShPermission> findAllPermissions();
+
     /**
      * @Description 通过 用户id 查询权限对象列表
      * @param userId

@@ -32,6 +32,13 @@ public class ShUserAdapterImpl implements ShUserAdapter {
         return users;
     }
 
+
+    @Override
+    public List<ShPermission> findAllPermissions() {
+        List<ShPermission> shPermissionList = shPermissionMapper.findAll();
+        return shPermissionList;
+    }
+
     @Override
     public List<ShPermission> findPermissionsByUserId(String userId) {
         List<ShPermission> shPermissionList = shPermissionMapper.findListByUserId(userId);

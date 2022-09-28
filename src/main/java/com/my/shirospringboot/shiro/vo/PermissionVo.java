@@ -9,6 +9,7 @@ import com.my.shirospringboot.pojo.ShPermission;
  */
 public class PermissionVo extends ShPermission {
     private String roleId;
+    private PermissionVo children;
 
 
     public String getRoleId() {
@@ -17,5 +18,13 @@ public class PermissionVo extends ShPermission {
 
     public void setRoleId(String roleId) {
         this.roleId = roleId;
+    }
+
+    public PermissionVo getChildren() {
+        return children;
+    }
+
+    public void setChildren(PermissionVo children) {
+        this.children = children;
     }
 }

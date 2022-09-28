@@ -15,6 +15,10 @@ import java.util.List;
 @Mapper
 public interface ShPermissionMapper extends BaseMapper<ShPermission> {
 
+
+    @Select(" select * from  sh_permission")
+    List<ShPermission> findAll();
+
     @Select("select a.* from sh_permission a left join sh_role_permission b on a.id = b.permissionId " +
             "left join sh_user_role c on b.roleId = c.roleId where c.userId = #{userId} ")
     List<ShPermission> findListByUserId(String userId);

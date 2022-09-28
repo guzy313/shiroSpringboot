@@ -55,6 +55,14 @@ public interface ShUsersBridgeService {
      */
     List<String> findPermissionNamesByUserId(String userId);
 
+
+    /**
+     * @Description 查询所有权限集合 -一般为管理员权限
+     * @param
+     * @return
+     */
+    List<ShPermission> findAllPermissions();
+
     /**
      * @Description 通过用户ID查询 权限集合
      * @param userId

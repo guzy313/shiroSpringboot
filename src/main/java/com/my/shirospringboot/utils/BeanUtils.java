@@ -1,6 +1,8 @@
 package com.my.shirospringboot.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.my.shirospringboot.shiro.vo.PermissionVo;
+import com.my.shirospringboot.shiro.web.account.MenuAction;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 
@@ -137,5 +139,8 @@ public class BeanUtils {
         String[] result = new String[emptyNames.size()];
         return emptyNames.toArray(result);
     }
+
+
+
 
 }

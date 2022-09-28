@@ -8,6 +8,11 @@ package com.my.shirospringboot.shiro.constant;
 public class SuperConstant {
 
     /**
+     * 管理员登录名
+     */
+    public static final String ADMINISTRATOR_NAME = "admin";
+
+    /**
      * 常量是
      */
     public static final String YES = "YES";
