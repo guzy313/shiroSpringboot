@@ -4,7 +4,6 @@ if (typeof my == "undefined") {
 }
 (function ($) {
     my.showTab = function (tabName,url) {
-        alert(url);
         $("#pageIframe").attr("src",url);
     }
 })(jQuery);
