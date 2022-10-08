@@ -21,8 +21,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -43,9 +45,9 @@ public class RoleAction {
      * @return
      */
     @RequestMapping("/listInitialize")
-    @RequiresRoles(value = {"SuperAdmin","MangerRole"},logical = Logical.OR)
+//    @RequiresRoles(value = {"SuperAdmin","MangerRole"},logical = Logical.OR) //暂时注掉 TODO
     public ModelAndView listInitialize(){
-        return new ModelAndView("role/role-listInitialize");
+        return new ModelAndView("roleManager");
     }
 
     /**
@@ -55,15 +57,20 @@ public class RoleAction {
      * @param page
      * @return map
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list.action")
     @ResponseBody
-    public ModelMap list(RoleVo roleVo,Integer rows,Integer page){
+    public ModelMap list(HttpServletRequest request, Integer pageSize, Integer pageIndex){
+        String id = request.getParameter("id");
+        String keyword = request.getParameter("keyword");
+        RoleVo roleVo = new RoleVo();//防止空指针
+        roleVo.setId(id);
         try {
-            List<ShRoles> list =  roleService.findRolesList(roleVo,rows,page);
+            List<Map<String,Object>> list =  roleService.findRolesList(roleVo,pageSize,pageIndex,keyword);
             Long total = roleService.countRolesList(roleVo);
             ModelMap modelMap = new ModelMap();
             modelMap.addAttribute("data",list);
             modelMap.addAttribute("total",total);
+            modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){
             log.error("查询角色错误",e.getMessage());
@@ -77,7 +84,7 @@ public class RoleAction {
      * @param roleVo
      * @return
      */
-    @RequestMapping("/input")
+    @RequestMapping("/input.action")
     public ModelAndView input(RoleVo roleVo){
         try {
 
@@ -111,7 +118,7 @@ public class RoleAction {
      * @param roleVo
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping("/save.action")
     public Boolean save(@ModelAttribute("role")RoleVo roleVo){
         try {
             return roleService.saveOrUpdateRole(roleVo);
@@ -126,7 +133,7 @@ public class RoleAction {
      * @param ids
      * @return
      */
-    @RequestMapping("/start")
+    @RequestMapping("/start.action")
     @ResponseBody
     public String start(String ids){
         String[] idArray = ids.split(",");

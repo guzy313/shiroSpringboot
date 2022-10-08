@@ -9,14 +9,12 @@ import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.RoleService;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.PageUtils;
 import com.my.shirospringboot.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Gzy
@@ -31,15 +29,30 @@ public class RoleServiceImpl implements RoleService {
     private ShRolePermissionMapper shRolePermissionMapper;
 
     @Override
-    public List<ShRoles> findRolesList(RoleVo roleVo, Integer rows, Integer page) throws Exception {
+    public List<Map<String,Object>> findRolesList(RoleVo roleVo, Integer pageSize, Integer pageIndex,String keyword) throws Exception {
+        //分页结果集合对象
+        List<Map<String,Object>> resultList = null;
+        //查询结果集合对象
+        List<ShRoles> list = null;
+
         //通过用户查询对应角色
         if(StringUtils.hasLength(roleVo.getUserId())){
-            List<ShRoles> list = shRolesMapper.findRolesByUserId(roleVo.getUserId());
-            return list;
+            list = shRolesMapper.findRolesByUserId(roleVo.getUserId());
+
+            //转map集合
+            resultList = BeanUtils.objectListToMapList(list);
+            return resultList;
         }
         //直接查询全部角色列表
-        List<ShRoles> list = shRolesMapper.findAll();
-        return list;
+        list = shRolesMapper.findAll();
+
+        if(list.size() > 0){
+            //实现分页的序号功能 并且转换成Map List
+            resultList = PageUtils.paging(list,pageSize,pageIndex);
+        }else{
+            resultList = new ArrayList<>();
+        }
+        return resultList;
     }
 
     @Override

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th=http://www.thymeleaf.org ; >
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="cache-control" content="no-cache,must-revalidate" />
+    <meta http-equiv="pragram" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script type="text/javascript"  th:src="@{/js/jquery-3.3.1.js}"></script>
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <title>角色管理</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .button_div{
+            height: 60px;
+            line-height: 60px;
+            text-align: right;
+            padding-right: 20px;
+        }
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 1px;
+        }
+        /*滚动条滑块*/
+        ::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+            background: #ECF4FE;
+            /*background: #66b1ff;*/
+        }
+        /*滚动条轨道*/
+        ::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 0.8px rgba(0,0,0,0);
+            border-radius: 10px;
+            background: #FFFFFF;
+        }
+        .keyword{
+            width:300px;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="app">
+
+        <div class="button_div">
+            <el-input class="keyword" id="keyword" v-model="keyword"  placeholder="请输入要查询的角色"></el-input>
+            <el-button type="primary" icon="el-icon-plus" @click="edit('add')"></el-button>
+            <el-button type="primary" icon="el-icon-edit" @click="edit('edit')"></el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="del"></el-button>
+            <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
+        </div>
+        <template>
+            <el-table
+                    ref="multipleTable"
+                    :data="tableData"
+                    tooltip-effect="dark"
+                    style="width: 100%"
+                    max-height="560"
+                    @selection-change="handleSelectionChange">
+                <el-table-column
+                        type="selection"
+                        width="55">
+                </el-table-column>
+                <el-table-column
+                        label="序号"
+                        width="90">
+                    <template slot-scope="scope">{{ scope.row.rowNo }}</template>
+                </el-table-column>
+                <el-table-column
+                        prop="roleName"
+                        label="角色"
+                        width="120">
+                </el-table-column>
+                <el-table-column
+                        prop="enableFlag"
+                        label="是否启用"
+                        show-overflow-tooltip>
+                </el-table-column>
+            </el-table>
+            <el-pagination align='center'
+                           @size-change="handleSizeChange"
+                           @current-change="handleCurrentChange"
+                           :current-page="pageIndex"
+                           :page-sizes="[1,5,10,20]"
+                           :page-size="pageSize"
+                           layout="total, sizes, prev, pager, next, jumper"
+                           :total="tableTotal">
+            </el-pagination>
+<!--            <div style="margin-top: 20px">-->
+<!--                <el-button @click="toggleSelection([tableData[1], tableData[2]])">切换第二、第三行的选中状态</el-button>-->
+<!--                <el-button @click="toggleSelection()">取消选择</el-button>-->
+<!--            </div>-->
+        </template>
+        <el-dialog
+                title="新增修改"
+                :visible.sync="dialogVisible"
+                width="80%"
+                :before-close="handleClose">
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="角色">
+                    <el-input v-model="form.roleName"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="form.description"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button @click="dialogVisible = false">取 消</el-button>
+                    <el-button type="primary" @click="onSubmit">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+    </div>
+</body>
+<script  th:inline="javascript">
+    /*<![CDATA[*/
+    // var context = [[@{/}]];
+    /*]]>*/
+    new Vue({
+        el: '#app',
+        data: function() {
+            return {
+                pageIndex:1,
+                pageSize:10,
+                activeName: 'second',
+                tableData: [],
+                tableTotal:0,
+                multipleSelection: [],
+                dialogVisible:false,
+                keyword:'',
+                form: {
+                    id:'',
+                    roleName:'',
+                    label: '',
+                    description:'',
+                    sort:'',
+                    enableFlag:''
+                }
+
+            }
+        },
+        methods: {
+            toggleSelection(rows) {
+                if (rows) {
+                    rows.forEach(row => {
+                        this.$refs.multipleTable.toggleRowSelection(row);
+                    });
+                } else {
+                    this.$refs.multipleTable.clearSelection();
+                }
+            },
+            handleSelectionChange(val) {
+                this.multipleSelection = val;
+            },
+            //每页条数改变时触发 选择一页显示多少行
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+                this.pageSize = val;
+                this.searchList();
+            },
+            //当前页改变时触发 跳转其他页
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
+                this.pageIndex = val;
+                this.searchList();
+            },
+            searchList(){
+                search(this.pageSize,this.pageIndex).then((res) => {
+                    this.tableData = res.data //将前端的数据data赋上后端的值
+                    this.tableTotal = res.total;
+                }).catch(e => {
+                    console.log(e + '公共的err')
+                })
+            },
+            onSubmit() {
+                save(this.form).then((res) => {
+                    this.$message('保存成功');
+                    this.dialogVisible = false;
+                    this.searchList();
+                }).catch(e => {
+                    this.$message('保存失败');
+                    console.log(e + '公共的err')
+                })
+                //表单保存
+                console.log('submit!');
+
+            },
+            edit(e){
+                if(e == "add"){
+                    this.form = {};
+                    this.dialogVisible = true;
+                }else{
+
+                    if(this.multipleSelection.length != 1){
+                        this.$message('请选择一条进行编辑');
+                        return ;
+                    }
+                    editEcho(this.multipleSelection[0].id).then((res) => {
+                        this.form = res.data[0]; //将前端的数据data赋上后端的值
+                        this.dialogVisible = true;
+                    }).catch(e => {
+                        console.log(e + '公共的err')
+                    })
+                }
+            },
+            del(e){
+                if(this.multipleSelection.length != 1){
+                    this.$message('请选择一条进行删除');
+                    return ;
+                }
+                if(this.multipleSelection[0].roleName == "admin"){
+                    this.$message('无法删除管理员');
+                    return ;
+                }
+                //确定删除
+                this.$confirm('确定要删除这条记录吗？')
+                    .then(_ => {
+
+                        delById(this.multipleSelection[0].id).then((res) => {
+                            this.$message('删除成功');
+                            this.searchList();
+                        }).catch(e => {
+                            this.$message('删除失败');
+                        })
+
+                    }).catch(_ => {});
+            },
+
+
+            handleClose(done) {
+                //关闭保存页面
+                this.$confirm('确认关闭？')
+                    .then(_ => {
+                        done();
+                    })
+                    .catch(_ => {});
+            }
+        },
+        mounted: function () {
+            search(this.pageSize,this.pageIndex).then((res) => {
+                this.tableData = res.data //将前端的数据data赋上后端的值
+                this.tableTotal = res.total;
+            }).catch(e => {
+                console.log(e + '公共的err')
+            })
+        }
+    })
+
+    function search(pageSize,pageIndex){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/list.action',
+                data: {
+                    userVo:{},
+                    pageSize:pageSize,
+                    pageIndex:pageIndex,
+                    keyword:$("#keyword").val()
+                },
+                dataType: 'json',
+                success: function (res) {
+                    var data = res.data;
+                    if (res.success) {
+                        resolve(res)
+                    } else {
+                        reject(res.message)
+                    }
+                },
+                error: function (data) {
+                    // alert("error");
+                }
+            });
+        })
+
+    }
+
+    /**
+     * 编辑回显
+     * @param id
+     * @param pageIndex
+     * @returns {Promise<unknown>}
+     */
+    function editEcho(id){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/list.action',
+                data: {id:id},
+                dataType: 'json',
+                success: function (res) {
+                    var data = res.data;
+                    if (res.success) {
+                        resolve(res)
+                    } else {
+                        reject(res.message)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+
+    }
+
+    function save(formdata){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/save.action',
+                data: {userVo:JSON.stringify(formdata)},
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+    }
+    function delById(id){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/delete.action',
+                data: {id:id},
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+    }
+
+</script>
+</html>

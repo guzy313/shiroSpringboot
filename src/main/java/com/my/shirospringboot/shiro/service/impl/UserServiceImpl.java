@@ -75,14 +75,13 @@ public class UserServiceImpl implements UserService {
                 list = shUsersMapper.findAll();
             }
             if(list.size() > 0){
-                //实现分页的序号功能
+                //实现分页的序号功能 并且转换成Map List
                 resultList = PageUtils.paging(list,pageSize,pageIndex);
+            }else{
+                resultList = new ArrayList<>();
             }
             return resultList;
         }
-
-
-
 
     }
 

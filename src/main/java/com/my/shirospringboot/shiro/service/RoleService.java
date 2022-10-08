@@ -5,6 +5,7 @@ import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -20,7 +21,7 @@ public interface RoleService {
      * @return
      * @throws Exception
      */
-    List<ShRoles> findRolesList(RoleVo roleVo,Integer rows,Integer page) throws Exception;
+    List<Map<String,Object>> findRolesList(RoleVo roleVo, Integer pageSize, Integer pageIndex,String keyword) throws Exception;
 
     /**
      * @Description: 查询角色分页前总数
