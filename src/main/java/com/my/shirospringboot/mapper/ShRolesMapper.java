@@ -58,4 +58,8 @@ public interface ShRolesMapper extends BaseMapper<ShRoles> {
             "</script>")
     List<ShRoles> getShRolesByIds(List<String> ids);
 
+    @Select("select * from sh_roles where roleName like concat('%',#{keyword},'%') ")
+    List<ShRoles> getShRolesByKeyword(String keyword);
+
+
 }

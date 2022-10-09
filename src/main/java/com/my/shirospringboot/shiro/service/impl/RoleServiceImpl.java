@@ -34,19 +34,34 @@ public class RoleServiceImpl implements RoleService {
         List<Map<String,Object>> resultList = null;
         //查询结果集合对象
         List<ShRoles> list = null;
+        //查询条件集合
+        Map<String,Object> conditionMap = new HashMap<>();
 
         //通过用户查询对应角色
         if(StringUtils.hasLength(roleVo.getUserId())){
             list = shRolesMapper.findRolesByUserId(roleVo.getUserId());
-
             //转map集合
             resultList = BeanUtils.objectListToMapList(list);
             return resultList;
         }
-        //直接查询全部角色列表
-        list = shRolesMapper.findAll();
 
-        if(list.size() > 0){
+        //通过角色ID查询对应角色
+        if(StringUtils.hasLength(roleVo.getId())){
+            conditionMap.put("id",roleVo.getId());
+            list = shRolesMapper.selectByMap(conditionMap);
+            //转map集合
+            resultList = BeanUtils.objectListToMapList(list);
+            return resultList;
+        }
+
+        if(StringUtils.hasLength(keyword)){
+            list = shRolesMapper.getShRolesByKeyword(keyword);
+        }else{
+            //直接查询全部角色列表
+            list = shRolesMapper.findAll();
+        }
+
+        if(list.size() > 0 && pageSize != null && pageIndex != null){
             //实现分页的序号功能 并且转换成Map List
             resultList = PageUtils.paging(list,pageSize,pageIndex);
         }else{
