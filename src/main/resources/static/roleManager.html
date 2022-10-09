@@ -314,7 +314,7 @@
         return new Promise(function (resolve, reject) {
             $.ajax({
                 url: '/role/save.action',
-                data: {userVo:JSON.stringify(formdata)},
+                data: {roleVo:JSON.stringify(formdata)},
                 dataType: 'json',
                 type:'post',
                 success: function (res) {

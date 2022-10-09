@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.alibaba.fastjson.JSON;
 import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
@@ -7,6 +8,7 @@ import com.my.shirospringboot.shiro.service.impl.LoginServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.PermissionServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.RoleServiceImpl;
 import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserVo;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
@@ -52,9 +54,9 @@ public class RoleAction {
 
     /**
      * @Description: 角色的分页查询
-     * @param roleVo
-     * @param rows
-     * @param page
+     * @param request
+     * @param pageSize
+     * @param pageIndex
      * @return map
      */
     @RequestMapping("/list.action")
@@ -115,11 +117,14 @@ public class RoleAction {
 
     /**
      * @Description: 保存角色 以及对应关联的权限信息
-     * @param roleVo
+     * @param request
      * @return
      */
     @RequestMapping("/save.action")
-    public Boolean save(@ModelAttribute("role")RoleVo roleVo){
+    @ResponseBody
+    public Boolean save(HttpServletRequest request){
+        String roleVoJsonStr = request.getParameter("roleVo");
+        RoleVo roleVo = JSON.parseObject(roleVoJsonStr,RoleVo.class);
         try {
             return roleService.saveOrUpdateRole(roleVo);
         }catch (Exception e){
@@ -154,7 +159,27 @@ public class RoleAction {
 
 
 
-
+    /**
+     * @Description: 删除角色信息
+     * @param
+     * @return boolean
+     */
+    @RequestMapping("/delete.action")
+    @ResponseBody
+    public Boolean delete(HttpServletRequest request){
+        String id = request.getParameter("id");
+        if(!com.my.shirospringboot.utils.StringUtils.hasLength(id)){
+            throw new RuntimeException("id不能为空");
+        }
+        RoleVo roleVo = new RoleVo();
+        roleVo.setId(id);
+        try {
+            return roleService.deleteRole(roleVo);
+        }catch (Exception e){
+            log.error("删除失败",e.getMessage());
+            return false;
+        }
+    }
 
 
 

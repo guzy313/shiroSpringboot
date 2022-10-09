@@ -5,9 +5,11 @@ import com.my.shirospringboot.mapper.ShRolePermissionMapper;
 import com.my.shirospringboot.mapper.ShRolesMapper;
 import com.my.shirospringboot.pojo.ShRolePermission;
 import com.my.shirospringboot.pojo.ShRoles;
+import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.RoleService;
 import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserVo;
 import com.my.shirospringboot.utils.BeanUtils;
 import com.my.shirospringboot.utils.PageUtils;
 import com.my.shirospringboot.utils.StringUtils;
@@ -100,6 +102,7 @@ public class RoleServiceImpl implements RoleService {
                         shRolePermissionMapper.insert(shRolePermission);
                     }
                 }
+                return true;
             }
         }else{
             //修改
@@ -122,7 +125,7 @@ public class RoleServiceImpl implements RoleService {
                        shRolePermissionMapper.insert(shRolePermissionToSave);
                    }
                 }
-
+                return true;
             }
         }
         return false;
@@ -136,5 +139,20 @@ public class RoleServiceImpl implements RoleService {
         }
         return false;
     }
+
+    @Override
+    public Boolean deleteRole(RoleVo roleVo) throws Exception {
+        //此处还未考虑哪些情况下用户无法删除
+        if("admin".equals(roleVo.getRoleName())){
+            throw new RuntimeException("管理员角色无法进行删除操作");
+        }
+        ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
+        int delete = shRolesMapper.deleteById(shRoles);
+        if(delete > 0){
+            return true;
+        }
+        return false;
+    }
+
 
 }

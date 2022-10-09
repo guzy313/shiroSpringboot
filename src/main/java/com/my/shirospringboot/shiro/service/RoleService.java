@@ -3,6 +3,7 @@ package com.my.shirospringboot.shiro.service;
 import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserVo;
 
 import java.util.List;
 import java.util.Map;
@@ -41,5 +42,14 @@ public interface RoleService {
      * @throws Exception
      */
     boolean updateByIds(List<String> ids,String flag) throws Exception;
+
+    /**
+     * @Description: 删除用户
+     * @param roleVo
+     * @return
+     * @throws Exception
+     */
+    Boolean deleteRole(RoleVo roleVo) throws Exception;
+
 
 }

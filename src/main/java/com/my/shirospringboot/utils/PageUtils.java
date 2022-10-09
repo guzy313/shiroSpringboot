@@ -28,15 +28,19 @@ public class PageUtils {
             throw new RuntimeException("调用分页方法时页码不能为空");
         }
         //将对象集合转换成Map集合
-        List<Map<String,Object>> listResult = BeanUtils.objectListToMapList(list);
+        List<Map<String,Object>> listMap = BeanUtils.objectListToMapList(list);
+
+        List<Map<String,Object>> listResult = new ArrayList<>();
         //开始分页
         int runNum = 1;
-        for (Map<String,Object> m:listResult) {
+        for (Map<String,Object> m:listMap) {
             if(runNum >= pageSize * (pageIndex - 1) + 1 //当页第一条
                     && runNum <= pageSize * pageIndex //当页最后一条
                     && runNum <= list.size()
-            )
-            m.put("rowNo",runNum);
+            ){
+                m.put("rowNo",runNum);
+                listResult.add(m);
+            }
             runNum ++;
         }
         return listResult;
