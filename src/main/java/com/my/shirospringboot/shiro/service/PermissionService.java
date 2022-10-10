@@ -4,6 +4,7 @@ import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.shiro.vo.PermissionVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -52,6 +53,14 @@ public interface PermissionService {
      * @throws Exception
      */
     List<ShPermission> findRoleHasPermissions(String roleId) throws Exception;
+
+    /**
+     * 通过 角色查询角色拥有的权限列表-级联数据格式
+     * @param roleId
+     * @return
+     * @throws Exception
+     */
+    List<Map<String,Object>> findRoleHasPermissionsForCascade(String roleId) throws Exception;
 
     boolean saveOrUpdatePermission(ShPermission shPermission) throws Exception;
 

@@ -52,6 +52,8 @@ public class RoleAction {
         return new ModelAndView("roleManager");
     }
 
+
+
     /**
      * @Description: 角色的分页查询
      * @param request
@@ -72,6 +74,26 @@ public class RoleAction {
             ModelMap modelMap = new ModelMap();
             modelMap.addAttribute("data",list);
             modelMap.addAttribute("total",total);
+            modelMap.addAttribute("success",true);
+            return modelMap;
+        }catch (Exception e){
+            log.error("查询角色错误",e.getMessage());
+            throw new RuntimeException("查询角色错误");
+        }
+    }
+
+    /**
+     * @Description: 通过角色ID查询角色权限
+     * @param id
+     * @return map
+     */
+    @RequestMapping("/getPermissionListByRoleId.action")
+    @ResponseBody
+    public ModelMap getPermissionListByRoleId(String id){
+        try {
+            List<Map<String,Object>> list =  permissionService.findRoleHasPermissionsForCascade(id);
+            ModelMap modelMap = new ModelMap();
+            modelMap.addAttribute("data",list);
             modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){

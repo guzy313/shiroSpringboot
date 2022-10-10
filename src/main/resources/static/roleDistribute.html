@@ -56,7 +56,7 @@
             <el-button type="primary" icon="el-icon-plus" @click="edit('add')">新增</el-button>
             <el-button type="primary" icon="el-icon-edit" @click="edit('edit')">修改</el-button>
             <el-button type="primary" icon="el-icon-delete" @click="del">删除</el-button>
-            <el-button type="primary" icon="el-icon-magic-stick" @click="dispatchPermission">权限分配</el-button>
+            <el-button type="primary" icon="el-icon-magic-stick" @click="dispatch">权限分配</el-button>
             <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
         </div>
         <template>
@@ -101,7 +101,6 @@
 <!--                <el-button @click="toggleSelection()">取消选择</el-button>-->
 <!--            </div>-->
         </template>
-        <!-- 新增修改弹框 -->
         <el-dialog
                 title="新增修改"
                 :visible.sync="dialogVisible"
@@ -119,36 +118,6 @@
                     <el-button type="primary" @click="onSubmit">确 定</el-button>
                 </el-form-item>
             </el-form>
-        </el-dialog>
-        <!-- 权限分配弹框 -->
-        <el-dialog
-                title="权限分配"
-                :visible.sync="dialogVisiblePermission"
-                width="80%"
-                :before-close="handleClose">
-            <el-form ref="form" :model="form" label-width="80px">
-                <el-input
-                        placeholder="输入关键字进行过滤"
-                        v-model="filterText">
-                </el-input>
-
-                <el-tree
-                        class="filter-tree"
-                        :data="permissionData"
-                        :props="defaultProps"
-                        :filter-node-method="filterNode"
-                        show-checkbox
-                        @check-change="handleCheckChangePermission"
-                        ref="tree">
-                </el-tree>
-                <el-form-item>
-                    <el-button @click="dialogVisiblePermission = false">取 消</el-button>
-                    <el-button type="primary" @click="onSubmitPermission">确 定</el-button>
-                </el-form-item>
-            </el-form>
-
-
-
         </el-dialog>
 
     </div>
@@ -168,7 +137,6 @@
                 tableTotal:0,
                 multipleSelection: [],
                 dialogVisible:false,
-                dialogVisiblePermission:false,
                 keyword:'',
                 form: {
                     id:'',
@@ -177,45 +145,11 @@
                     description:'',
                     sort:'',
                     enableFlag:''
-                },
-                //权限树形下拉 模糊查询keyword
-                filterText: '',
-                permissionData:[],
-                selectedPermissionIds:[],
-                //树形节点
-                defaultProps: {
-                    children: 'children',
-                    label: 'label'
                 }
 
             }
         },
-        watch: {
-            filterText(val) {
-                this.$refs.tree.filter(val);
-            }
-        },
         methods: {
-            //模糊过滤属性节点
-            filterNode(value, data) {
-                if (!value) return true;
-                return data.label.indexOf(value) !== -1;
-            },
-            handleCheckChangePermission(data, checked, indeterminate) {
-                //权限分配-选中节点事件
-                console.log(data, checked, indeterminate);
-                if(checked){
-                    this.selectedPermissionIds.push(data.id);
-                }else{
-                    this.selectedPermissionIds.remove(data.id);
-                }
-                Array.prototype.remove = function(val) {
-                    var index = this.indexOf(val);
-                    if (index > -1) {
-                        this.splice(index, 1);
-                    }
-                };
-            },
             toggleSelection(rows) {
                 if (rows) {
                     rows.forEach(row => {
@@ -261,9 +195,6 @@
                 console.log('submit!');
 
             },
-            onSubmitPermission(){
-
-            },
             edit(e){
                 if(e == "add"){
                     this.form = {};
@@ -304,20 +235,8 @@
 
                     }).catch(_ => {});
             },
-            dispatchPermission(){
-                if(this.multipleSelection.length != 1){
-                    this.$message('请选择一个角色进行分配');
-                    return ;
-                }
-                getDispatchPermission(this.multipleSelection[0].id).then((res) => {
-                    this.permissionData = res.data;
-                    this.dialogVisiblePermission = true;
-                }).catch(e => {
-                        console.log(e + '公共的err')
-                })
 
 
-            },
             handleClose(done) {
                 //关闭保存页面
                 this.$confirm('确认关闭？')
@@ -431,35 +350,6 @@
                 }
             });
         })
-    }
-
-    /**
-     * 获取 需要分配权限的角色 的 权限数据
-     * @param roleId
-     * @returns {Promise}
-     */
-    function getDispatchPermission(roleId){
-        return new Promise(function (resolve, reject) {
-            $.ajax({
-                url: '/role/getPermissionListByRoleId.action',
-                data: {
-                   id:roleId
-                },
-                dataType: 'json',
-                success: function (res) {
-                    var data = res.data;
-                    if (res.success) {
-                        resolve(res)
-                    } else {
-                        reject(res.message)
-                    }
-                },
-                error: function (data) {
-                    // alert("error");
-                }
-            });
-        })
-
     }
 
 </script>
