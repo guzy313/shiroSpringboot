@@ -131,6 +131,25 @@ public class RoleServiceImpl implements RoleService {
         return false;
     }
 
+
+    @Override
+    public boolean saveRoleHasPermissions(String roleId, List<String> permissionIdsList) throws Exception {
+
+        //删除之前当前角色的权限
+        Map<String, Object> roleIdMap = new HashMap<>();
+        roleIdMap.put("roleId",roleId);
+        int deleteRoleHasPermissions = shRolePermissionMapper.deleteByMap(roleIdMap);
+        //保存角色的权限
+       for (String s:permissionIdsList ) {
+            ShRolePermission shRolePermissionToSave = new ShRolePermission();
+            shRolePermissionToSave.setPermissionId(s);
+            shRolePermissionToSave.setRoleId(roleId);
+            shRolePermissionToSave.setEnableFlag(SuperConstant.YES);
+            shRolePermissionMapper.insert(shRolePermissionToSave);
+        }
+        return true;
+    }
+
     @Override
     public boolean updateByIds(List<String> ids,String flag) throws Exception {
         int update = shRolesMapper.updateEnableFlagByIds(ids, flag);

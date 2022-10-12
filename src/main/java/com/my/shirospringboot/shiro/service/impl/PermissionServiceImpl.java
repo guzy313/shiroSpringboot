@@ -52,7 +52,10 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public List<Map<String,Object>> findRoleHasPermissionsForCascade(String roleId) throws Exception {
+    public Map<String,Object> findRoleHasPermissionsForCascade(String roleId) throws Exception {
+
+        Map<String,Object> resultMap = new HashMap<>();
+
         //选中
         List<ShPermission> list = shPermissionMapper.findRoleHasPermissions(roleId);
 
@@ -67,7 +70,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         for (PermissionVo p:listVo ) {
             String id = p.getId();
-            p.setSelected(true);
+            p.setSelected(false);
             for (ShPermission s:list ) {
                 //选中
                 String s_id = s.getId();
@@ -76,8 +79,10 @@ public class PermissionServiceImpl implements PermissionService {
                 }
             }
         }
-        //
+        //最终结果
         List<Map<String,Object>> resultList = new ArrayList<>();
+        //选中权限id
+        List<String> selectedPermissionIds = new ArrayList<>();
         for (PermissionVo p:listVo ) {
             if(p.getId().length() == 3){
                 //取出1级菜单
@@ -90,8 +95,16 @@ public class PermissionServiceImpl implements PermissionService {
                 }
                 resultList.add(map);
             }
+            if(p.getSelected() == true){
+                selectedPermissionIds.add(p.getId());
+            }
         }
-        return resultList;
+        //最终结果
+        resultMap.put("data",resultList);
+        //选中权限id-用来给前端选中节点数组初始化
+        resultMap.put("selectedPermissionIds",selectedPermissionIds);
+
+        return resultMap;
     }
 
     /**

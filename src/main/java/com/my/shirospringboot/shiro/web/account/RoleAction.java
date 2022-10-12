@@ -24,9 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Gzy
@@ -91,9 +89,10 @@ public class RoleAction {
     @ResponseBody
     public ModelMap getPermissionListByRoleId(String id){
         try {
-            List<Map<String,Object>> list =  permissionService.findRoleHasPermissionsForCascade(id);
+            Map<String,Object> map =  permissionService.findRoleHasPermissionsForCascade(id);
             ModelMap modelMap = new ModelMap();
-            modelMap.addAttribute("data",list);
+            modelMap.addAttribute("data",map.get("data"));
+            modelMap.addAttribute("selectedPermissionIds",map.get("selectedPermissionIds"));
             modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){
@@ -149,6 +148,26 @@ public class RoleAction {
         RoleVo roleVo = JSON.parseObject(roleVoJsonStr,RoleVo.class);
         try {
             return roleService.saveOrUpdateRole(roleVo);
+        }catch (Exception e){
+            log.error("保存失败",e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * @Description: 保存角色权限
+     * @param request
+     * @return
+     */
+    @RequestMapping("/saveRoleHasPermissions.action")
+    @ResponseBody
+    public Boolean saveRoleHasPermissions(HttpServletRequest request){
+        String roleId = request.getParameter("roleId");
+        String permissionIds = request.getParameter("permissionIds");
+        List<String> permissionIdsList
+                = Arrays.asList(permissionIds.split(","));
+        try {
+            return roleService.saveRoleHasPermissions(roleId,permissionIdsList);
         }catch (Exception e){
             log.error("保存失败",e.getMessage());
             return false;

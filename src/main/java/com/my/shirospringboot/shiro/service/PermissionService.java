@@ -60,7 +60,7 @@ public interface PermissionService {
      * @return
      * @throws Exception
      */
-    List<Map<String,Object>> findRoleHasPermissionsForCascade(String roleId) throws Exception;
+    Map<String,Object> findRoleHasPermissionsForCascade(String roleId) throws Exception;
 
     boolean saveOrUpdatePermission(ShPermission shPermission) throws Exception;
 

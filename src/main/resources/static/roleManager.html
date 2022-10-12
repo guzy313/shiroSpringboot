@@ -138,6 +138,7 @@
                         :props="defaultProps"
                         :filter-node-method="filterNode"
                         show-checkbox
+                        node-key="id"
                         @check-change="handleCheckChangePermission"
                         :default-checked-keys="selectedPermissionIds"
                         ref="tree">
@@ -210,6 +211,8 @@
                     }
                 };
 
+
+
                 //权限分配-选中节点事件
                 console.log(data, checked, indeterminate);
                 if(checked){
@@ -217,8 +220,21 @@
                 }else{
                     this.selectedPermissionIds.remove(data.id);
                 }
-                alert(this.selectedPermissionIds);
 
+                //处理半选中节点
+                //如果半选中节点的id 不在选中节点的id数组里面 则添加(实现半选中节点也为选中状态)
+                var halfCheckedKeys = this.$refs.tree.getHalfCheckedKeys();
+                for (let i = 0; i < halfCheckedKeys; i++) {
+                    var has = false;
+                    for (let j = 0; j < this.selectedPermissionIds.length; j++) {
+                        if(halfCheckedKeys[i] == this.selectedPermissionIds[j]){
+                            has = true;
+                        }
+                    }
+                    if(!has){
+                        this.selectedPermissionIds.push(halfCheckedKeys[i]);
+                    }
+                }
             },
             toggleSelection(rows) {
                 if (rows) {
@@ -266,7 +282,18 @@
 
             },
             onSubmitPermission(){
-
+                //被分配权限的角色ID
+                var roleId = this.multipleSelection[0].id;
+                //分配的权限ID数组
+                var permissionIds = this.selectedPermissionIds;
+                saveRoleHasPermissions(roleId,permissionIds).then((res) => {
+                    this.$message('保存成功');
+                    this.dialogVisiblePermission = false;
+                    this.searchList();
+                }).catch(e => {
+                    this.$message('保存失败');
+                    console.log(e + '公共的err')
+                })
             },
             edit(e){
                 if(e == "add"){
@@ -318,8 +345,10 @@
                 }
                 getDispatchPermission(this.multipleSelection[0].id).then((res) => {
                     this.permissionData = res.data;
+                    this.selectedPermissionIds = res.selectedPermissionIds;
+                    alert(this.selectedPermissionIds);
+                    //TODO
                     this.dialogVisiblePermission = true;
-                this.selectedPermissionIds.push(this.permissionData[0].id);
                 }).catch(e => {
                         console.log(e + '公共的err')
                 })
@@ -468,6 +497,58 @@
             });
         })
 
+    }
+
+    function save(formdata){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/save.action',
+                data: {roleVo:JSON.stringify(formdata)},
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+    }
+
+    function saveRoleHasPermissions(roleId,permissionIds){
+        var permissionIdsStr = "";
+        for (let i = 0; i < permissionIds.length; i++) {
+            permissionIdsStr += permissionIds[i];
+            if(i != i - 1){
+                permissionIdsStr += ",";
+            }
+        }
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/saveRoleHasPermissions.action',
+                data: {
+                    roleId:roleId,
+                    permissionIds:permissionIdsStr
+                },
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
     }
 
 </script>

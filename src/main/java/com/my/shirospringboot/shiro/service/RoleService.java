@@ -32,7 +32,17 @@ public interface RoleService {
      */
     Long countRolesList(RoleVo roleVo) throws Exception;
 
+    /**
+     * 保存角色
+     * @param roleVo
+     * @return
+     * @throws Exception
+     */
     boolean saveOrUpdateRole(RoleVo roleVo) throws Exception;
+
+
+    boolean saveRoleHasPermissions(String roleId,List<String> permissionIdsList) throws Exception;
+
 
     /**
      * @Description: 通过ID、标志更新角色是否启用
