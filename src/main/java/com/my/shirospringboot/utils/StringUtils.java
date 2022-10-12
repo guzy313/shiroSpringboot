@@ -26,4 +26,22 @@ public class StringUtils extends org.springframework.util.StringUtils {
          return str.toString();
      }
 
+    /**
+     * 判断字符串是否为空或NULL.
+     *
+     * @param str
+     * @author weidong
+     */
+    public static boolean isEmpty(String str) {
+        if (str == null || "".equals(str.trim()) || "null".equals(str.trim()) || "undefined".equals(str.trim())) { // 为空
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isNotEmpty(String str) {
+        return !isEmpty(str);
+    }
+
 }

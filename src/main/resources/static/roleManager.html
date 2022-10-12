@@ -139,6 +139,7 @@
                         :filter-node-method="filterNode"
                         show-checkbox
                         @check-change="handleCheckChangePermission"
+                        :default-checked-keys="selectedPermissionIds"
                         ref="tree">
                 </el-tree>
                 <el-form-item>
@@ -202,6 +203,13 @@
                 return data.label.indexOf(value) !== -1;
             },
             handleCheckChangePermission(data, checked, indeterminate) {
+                Array.prototype.remove = function(val) {
+                    var index = this.indexOf(val);
+                    if (index > -1) {
+                        this.splice(index, 1);
+                    }
+                };
+
                 //权限分配-选中节点事件
                 console.log(data, checked, indeterminate);
                 if(checked){
@@ -209,12 +217,8 @@
                 }else{
                     this.selectedPermissionIds.remove(data.id);
                 }
-                Array.prototype.remove = function(val) {
-                    var index = this.indexOf(val);
-                    if (index > -1) {
-                        this.splice(index, 1);
-                    }
-                };
+                alert(this.selectedPermissionIds);
+
             },
             toggleSelection(rows) {
                 if (rows) {
@@ -305,6 +309,9 @@
                     }).catch(_ => {});
             },
             dispatchPermission(){
+                //清除上一次的选中状态
+                this.selectedPermissionIds = [];
+
                 if(this.multipleSelection.length != 1){
                     this.$message('请选择一个角色进行分配');
                     return ;
@@ -312,6 +319,7 @@
                 getDispatchPermission(this.multipleSelection[0].id).then((res) => {
                     this.permissionData = res.data;
                     this.dialogVisiblePermission = true;
+                this.selectedPermissionIds.push(this.permissionData[0].id);
                 }).catch(e => {
                         console.log(e + '公共的err')
                 })

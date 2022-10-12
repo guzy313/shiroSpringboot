@@ -67,7 +67,7 @@ public class PermissionServiceImpl implements PermissionService {
 
         for (PermissionVo p:listVo ) {
             String id = p.getId();
-            p.setSelected(false);
+            p.setSelected(true);
             for (ShPermission s:list ) {
                 //选中
                 String s_id = s.getId();
