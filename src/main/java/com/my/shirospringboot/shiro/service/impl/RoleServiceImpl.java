@@ -165,9 +165,16 @@ public class RoleServiceImpl implements RoleService {
         if("admin".equals(roleVo.getRoleName())){
             throw new RuntimeException("管理员角色无法进行删除操作");
         }
+
+        //删除之前当前角色的权限①
+        Map<String, Object> roleIdMap = new HashMap<>();
+        roleIdMap.put("roleId",roleVo.getId());
+
         ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
         int delete = shRolesMapper.deleteById(shRoles);
         if(delete > 0){
+            //删除之前当前角色的权限②
+            int deleteRoleHasPermissions = shRolePermissionMapper.deleteByMap(roleIdMap);
             return true;
         }
         return false;

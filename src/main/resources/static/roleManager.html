@@ -120,6 +120,7 @@
                 </el-form-item>
             </el-form>
         </el-dialog>
+
         <!-- 权限分配弹框 -->
         <el-dialog
                 title="权限分配"
@@ -141,6 +142,7 @@
                         node-key="id"
                         @check-change="handleCheckChangePermission"
                         :default-checked-keys="selectedPermissionIds"
+                        :check-strictly="permissionCheckStrictly"
                         ref="tree">
                 </el-tree>
                 <el-form-item>
@@ -188,7 +190,9 @@
                 defaultProps: {
                     children: 'children',
                     label: 'label'
-                }
+                },
+                //树形节点是否父子联动-用来解决回显时候父节点id会导致子节点全部选中问题
+                permissionCheckStrictly:true
 
             }
         },
@@ -345,9 +349,13 @@
                 }
                 getDispatchPermission(this.multipleSelection[0].id).then((res) => {
                     this.permissionData = res.data;
+
+                    //解决父子节点回显问题
+                    this.permissionCheckStrictly = false;
                     this.selectedPermissionIds = res.selectedPermissionIds;
-                    alert(this.selectedPermissionIds);
-                    //TODO
+                    this.permissionCheckStrictly = true;
+
+
                     this.dialogVisiblePermission = true;
                 }).catch(e => {
                         console.log(e + '公共的err')
