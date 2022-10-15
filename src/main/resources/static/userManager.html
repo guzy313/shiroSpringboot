@@ -390,7 +390,7 @@
     function delById(id){
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: '/role/delete.action',
+                url: '/user/delete.action',
                 data: {id:id},
                 dataType: 'json',
                 type:'post',

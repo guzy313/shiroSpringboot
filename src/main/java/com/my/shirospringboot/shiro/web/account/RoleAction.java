@@ -93,6 +93,7 @@ public class RoleAction {
             ModelMap modelMap = new ModelMap();
             modelMap.addAttribute("data",map.get("data"));
             modelMap.addAttribute("selectedPermissionIds",map.get("selectedPermissionIds"));
+            modelMap.addAttribute("halfSelectedPermissionIds",map.get("halfSelectedPermissionIds"));
             modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){

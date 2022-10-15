@@ -5,9 +5,9 @@ import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.shiro.service.PermissionService;
 import com.my.shirospringboot.shiro.vo.PermissionVo;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,10 +99,33 @@ public class PermissionServiceImpl implements PermissionService {
                 selectedPermissionIds.add(p.getId());
             }
         }
+
+
+        //半选中权限id(即有子集并且子集没有全选中至少选中一个——解决elementUI tree回显问题)
+        List<String> halfSelectedPermissionIds = new ArrayList<>();//半选父节点下面的子节点集合
+
+        //一个节点存在子节点则不会单独选中父节点，一定是选中了某个子节点才会选中父节点，一个节点没有子节点，选中则选中本身
+        //elementui tree中：选中子节点会自动联动半选父节点,如果子节点全部选中,则会自动选中父节点
+        //所以回显数组只需要返回最下面的子节点就行
+        for (ShPermission s:list) {
+            boolean hasChildren = false;
+            for (ShPermission all:listAll) {
+                if(s.getId().equals(all.getParentId())){
+                    hasChildren = true;
+                }
+            }
+            if(!hasChildren){//如果没有子节点，则选中父节点
+                halfSelectedPermissionIds.add(s.getId());
+            }
+        }
+
+
         //最终结果
         resultMap.put("data",resultList);
         //选中权限id-用来给前端选中节点数组初始化
         resultMap.put("selectedPermissionIds",selectedPermissionIds);
+        //半选中权限id(即有子集并且子集没有全选中至少选中一个——解决elementUI tree回显问题)
+        resultMap.put("halfSelectedPermissionIds",halfSelectedPermissionIds);
 
         return resultMap;
     }

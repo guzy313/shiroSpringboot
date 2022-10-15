@@ -43,8 +43,8 @@ public class PermissionAction {
      * @return
      */
     @RequestMapping("/listInitialize")
-    public String listInitialize(){
-        return "/permission/permission-listInitialize";
+    public ModelAndView listInitialize(){
+        return new ModelAndView("permissionManager");
     }
 
     /**

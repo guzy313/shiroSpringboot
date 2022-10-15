@@ -141,7 +141,6 @@
                         show-checkbox
                         node-key="id"
                         @check-change="handleCheckChangePermission"
-                        :default-checked-keys="selectedPermissionIds"
                         :check-strictly="permissionCheckStrictly"
                         ref="tree">
                 </el-tree>
@@ -192,7 +191,7 @@
                     label: 'label'
                 },
                 //树形节点是否父子联动-用来解决回显时候父节点id会导致子节点全部选中问题
-                permissionCheckStrictly:true
+                permissionCheckStrictly:false
 
             }
         },
@@ -349,12 +348,13 @@
                 }
                 getDispatchPermission(this.multipleSelection[0].id).then((res) => {
                     this.permissionData = res.data;
+                    this.selectedPermissionIds = res.selectedPermissionIds;
 
                     //解决父子节点回显问题
-                    this.permissionCheckStrictly = false;
-                    this.selectedPermissionIds = res.selectedPermissionIds;
-                    this.permissionCheckStrictly = true;
-
+                    this.$nextTick(()=>{
+                        this.$refs.tree.setCheckedKeys(res.halfSelectedPermissionIds); //给树节点赋值回显
+                        this.permissionCheckStrictly= false; //重点： 赋值完成后 设置为false
+                    })
 
                     this.dialogVisiblePermission = true;
                 }).catch(e => {
