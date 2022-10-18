@@ -13,6 +13,14 @@ import java.util.Map;
  */
 public interface PermissionService {
 
+
+    /**
+     * 查询树状级联权限列表
+     * @return
+     * @throws Exception
+     */
+    Map<String,Object> findPermissionsForCascade() throws Exception;
+
     /**
      * @Description 查询权限分页列表
      * @param permissionVo

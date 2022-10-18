@@ -36,4 +36,9 @@ public class SuperConstant {
      * permission 权限最高级父id
      */
     public static final String ROOT_PARENT_ID = "0";
+
+    /**
+     * 系统permission菜单权限(不允许被删除)
+     */
+    public static final String[] SYSTEM_PERMISSION_IDS = {"001","001001","001002","001003","001004"};
 }

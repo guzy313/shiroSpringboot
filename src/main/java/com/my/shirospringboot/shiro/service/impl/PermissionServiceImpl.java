@@ -2,9 +2,11 @@ package com.my.shirospringboot.shiro.service.impl;
 
 import com.my.shirospringboot.mapper.ShPermissionMapper;
 import com.my.shirospringboot.pojo.ShPermission;
+import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.PermissionService;
 import com.my.shirospringboot.shiro.vo.PermissionVo;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.PageUtils;
 import com.my.shirospringboot.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,10 +25,68 @@ import java.util.Map;
 public class PermissionServiceImpl implements PermissionService {
     @Autowired
     private ShPermissionMapper shPermissionMapper;
-    @Override
-    public List<ShPermission> findPermissionList(PermissionVo shPermissionVo, Integer rows, Integer page) {
 
-        return null;
+
+    @Override
+    public Map<String, Object> findPermissionsForCascade() throws Exception {
+        Map<String,Object> resultMap = new HashMap<>();
+
+        List<ShPermission> listAll = shPermissionMapper.findAll();
+        List<PermissionVo> listVo = new ArrayList<>();
+        for (ShPermission p:listAll ) {
+            PermissionVo permissionVo = new PermissionVo();
+            BeanUtils.copyPropertiesIgnoreNull(p,permissionVo);
+            listVo.add(permissionVo);
+        }
+
+        //最终结果
+        List<Map<String,Object>> resultList = new ArrayList<>();
+        for (PermissionVo p:listVo ) {
+            if(p.getId().length() == 3){
+                //取出1级菜单
+                Map<String,Object> map = new HashMap<>();
+                map.put("label",p.getPermissionName());
+                map.put("id",p.getId());
+                if(getTree(listVo,p.getId()).size() > 0){
+                    map.put("children",getTree(listVo,p.getId()));
+                }
+                resultList.add(map);
+            }
+        }
+        //最终结果
+        resultMap.put("data",resultList);
+        return resultMap;
+    }
+
+
+    @Override
+    public List<ShPermission> findPermissionList(PermissionVo shPermissionVo, Integer pageSize, Integer pageIndex) {
+        //分页结果集合对象
+        List<Map<String,Object>> resultList = null;
+        //查询结果集合对象
+        List<ShPermission> list = null;
+        //查询条件集合
+        Map<String,Object> conditionMap = new HashMap<>();
+
+        //通过权限ID查询对应权限
+        if(StringUtils.hasLength(shPermissionVo.getId())){
+            conditionMap.put("id",shPermissionVo.getId());
+            list = shPermissionMapper.selectByMap(conditionMap);
+            //转map集合
+            resultList = BeanUtils.objectListToMapList(list);
+            return list;
+        }
+
+        //直接查询全部权限列表
+        list = shPermissionMapper.findAll();
+
+//        if(list.size() > 0 && pageSize != null && pageIndex != null){
+//            //实现分页的序号功能 并且转换成Map List
+//            resultList = PageUtils.paging(list,pageSize,pageIndex);
+//        }else{
+//            resultList = new ArrayList<>();
+//        }
+        return list;
     }
 
     @Override
@@ -159,6 +219,7 @@ public class PermissionServiceImpl implements PermissionService {
     public boolean saveOrUpdatePermission(ShPermission shPermission) throws Exception {
 
         if(!StringUtils.hasLength(shPermission.getId())){
+            shPermission.setId(this.generatePermissionId(shPermission.getParentId()));
             //新增
             int insert = shPermissionMapper.insert(shPermission);
             if(insert > 0){
@@ -176,6 +237,13 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public boolean deletePermission(ShPermission shPermission) throws Exception {
+        //系统权限不允许删除
+        for (String s: SuperConstant.SYSTEM_PERMISSION_IDS ) {
+            if(s.equals(shPermission.getId())){
+                return false;
+            }
+        }
+
         if(StringUtils.hasLength(shPermission.getId())){
             int delete = shPermissionMapper.deleteById(shPermission.getId());
             if(delete > 0){
@@ -184,4 +252,45 @@ public class PermissionServiceImpl implements PermissionService {
         }
         return false;
     }
+
+    /**
+     * 生成权限ID方法
+     * @param parentId
+     * @return
+     */
+    public String generatePermissionId(String parentId){
+        List<ShPermission> all = shPermissionMapper.findAll();
+        int max = 0;
+        if(StringUtils.isNotEmpty(parentId)){
+            //新建子级的情况
+
+            for (ShPermission s:all) {
+                if(parentId.equals(s.getParentId())){//遍历父级ID相同的权限，用来取最大权限
+                    if(max < Integer.parseInt(s.getId())){
+                        max = Integer.parseInt(s.getId());
+                    }
+                }
+            }
+        }else{
+            //无父级情况-生成最高级
+            for (ShPermission s:all) {
+                if(StringUtils.isEmpty(s.getParentId())){//遍历父级ID相同的权限，用来取权限ID的最大值
+                    if(max < Integer.parseInt(s.getId())){
+                        max = Integer.parseInt(s.getId());
+                    }
+                }
+            }
+        }
+        max ++;
+        StringBuffer permissionId = new StringBuffer();
+        int len = 3 - Integer.toString(max).length();
+        for (int i = 0; i < len; i++) {
+            permissionId.append("0");
+        }
+        permissionId.append(Integer.toString(max));
+
+        return permissionId.toString();
+    }
+
+
 }

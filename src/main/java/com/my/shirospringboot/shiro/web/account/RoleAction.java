@@ -97,8 +97,8 @@ public class RoleAction {
             modelMap.addAttribute("success",true);
             return modelMap;
         }catch (Exception e){
-            log.error("查询角色错误",e.getMessage());
-            throw new RuntimeException("查询角色错误");
+            log.error("查询角色拥有的权限错误",e.getMessage());
+            throw new RuntimeException("查询角色拥有的权限错误");
         }
     }
 

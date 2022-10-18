@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.alibaba.fastjson.JSON;
 import com.my.shirospringboot.mapper.ShPermissionMapper;
 import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Gzy
@@ -29,6 +32,7 @@ import java.util.List;
 @RequestMapping("/permission")
 public class PermissionAction {
     private static final Logger log = LoggerFactory.getLogger(PermissionAction.class);
+    @Autowired
     private PermissionServiceImpl permissionService;
 
     //自定义格式转换器
@@ -47,6 +51,30 @@ public class PermissionAction {
         return new ModelAndView("permissionManager");
     }
 
+
+
+
+    /**
+     * @Description: 获取权限 树状
+     * @param id
+     * @return map
+     */
+    @RequestMapping("/getPermissionListTree.action")
+    @ResponseBody
+    public ModelMap getPermissionListTree(){
+        try {
+            Map<String,Object> map =  permissionService.findPermissionsForCascade();
+            ModelMap modelMap = new ModelMap();
+            modelMap.addAttribute("data",map.get("data"));
+            modelMap.addAttribute("success",true);
+            return modelMap;
+        }catch (Exception e){
+            log.error("查询权限错误",e.getMessage());
+            throw new RuntimeException("查询权限错误");
+        }
+    }
+
+
     /**
      * @Description: 获取权限列表
      * @param permissionVo
@@ -54,15 +82,16 @@ public class PermissionAction {
      * @param page
      * @return
      */
-    @RequestMapping("/list")
+    @RequestMapping("/list.action")
     @ResponseBody
     public ModelMap list(PermissionVo permissionVo, Integer rows, Integer page){
+        //暂无分页需求，所以不做分页功能
        try {
            List<ShPermission> list = permissionService.findPermissionList(permissionVo,rows,page);
            Long total = permissionService.countPermissionList(permissionVo);
            ModelMap modelMap = new ModelMap();
            modelMap.addAttribute("data",list);
-           modelMap.addAttribute("total",total);
+           modelMap.addAttribute("success",true);
            return modelMap;
        }catch (Exception e){
            log.error("获取权限列表失败",e.getMessage());
@@ -75,9 +104,11 @@ public class PermissionAction {
      * @param shPermission
      * @return
      */
-    @RequestMapping("/save")
+    @RequestMapping("/save.action")
     @ResponseBody
-    public boolean save(@ModelAttribute("permission")ShPermission shPermission){
+    public boolean save(HttpServletRequest request){
+        String permissionJsonStr = request.getParameter("permission");
+        ShPermission shPermission = JSON.parseObject(permissionJsonStr,ShPermission.class);
         try {
             return permissionService.saveOrUpdatePermission(shPermission);
         }catch (Exception e){
@@ -91,15 +122,21 @@ public class PermissionAction {
      * @param shPermission
      * @return
      */
-    @RequestMapping("/delete")
+    @RequestMapping("/delete.action")
     @ResponseBody
-    public boolean delete(@ModelAttribute("permission")ShPermission shPermission){
+    public boolean delete(HttpServletRequest request){
+        String id = request.getParameter("id");
+        if(!com.my.shirospringboot.utils.StringUtils.hasLength(id)){
+            throw new RuntimeException("id不能为空");
+        }
+        ShPermission permission = new ShPermission();
+        permission.setId(id);
         try {
-            if(permissionService.findPermissionListByParentId(shPermission.getId()).size() > 0){
+            if(permissionService.findPermissionListByParentId(permission.getId()).size() > 0){
                 //如果被删除的节点有子节点，则不允许删除
                 return false;
             }
-            return permissionService.deletePermission(shPermission);
+            return permissionService.deletePermission(permission);
         }catch (Exception e){
             log.error("删除失败",e.getMessage());
             return false;

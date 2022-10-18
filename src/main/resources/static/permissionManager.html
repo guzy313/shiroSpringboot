@@ -69,6 +69,7 @@
                     :data="data"
                     :props="defaultProps"
                     default-expand-all
+                    node-key="id"
                     :filter-node-method="filterNode"
                     ref="tree">
             </el-tree>
@@ -79,20 +80,36 @@
                 width="80%"
                 :before-close="handleClose">
             <el-form ref="form" :model="form" label-width="80px">
-                <el-form-item label="登录名">
-                    <el-input v-model="form.loginName"></el-input>
+                <el-form-item label="父级节点">
+                    <el-input v-model="form.parentId" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="权限名称">
+                    <el-input v-model="form.permissionName"></el-input>
+                </el-form-item>
+                <el-form-item label="权限标签">
+                    <el-input v-model="form.label"></el-input>
+                </el-form-item>
+                <el-form-item label="权限url">
+                    <el-input v-model="form.path"></el-input>
+                </el-form-item>
+                <el-form-item label="权限图标">
+                    <el-input v-model="form.icon" placeholder="请输入elementUI的图标class"></el-input>
+                </el-form-item>
+                <el-form-item label="排序">
+                    <el-input-number v-model="form.sort" :min="1" ></el-input-number>
                 </el-form-item>
 
-                <el-form-item label="性别">
-                    <el-select v-model="form.sex" placeholder="请选择性别">
-                        <el-option label="男" value="男"></el-option>
-                        <el-option label="女" value="女"></el-option>
+                <el-form-item label="描述">
+                    <el-input v-model="form.description"></el-input>
+                </el-form-item>
+
+                <el-form-item label="是否启用">
+                    <el-select v-model="form.enableFlag" placeholder="请选择">
+                        <el-option label="是" value="YES"></el-option>
+                        <el-option label="否" value="NO"></el-option>
                     </el-select>
                 </el-form-item>
 
-                <el-form-item label="地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
                 <el-form-item>
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="onSubmit">确 定</el-button>
@@ -110,49 +127,23 @@
         el: '#app',
         data: function() {
             return {
-                data: [{
-                    id: 1,
-                    label: '一级 1',
-                    children: [{
-                        id: 4,
-                        label: '二级 1-1',
-                        children: [{
-                            id: 9,
-                            label: '三级 1-1-1'
-                        }, {
-                            id: 10,
-                            label: '三级 1-1-2'
-                        }]
-                    }]
-                }, {
-                    id: 2,
-                    label: '一级 2',
-                    children: [{
-                        id: 5,
-                        label: '二级 2-1'
-                    }, {
-                        id: 6,
-                        label: '二级 2-2'
-                    }]
-                }, {
-                    id: 3,
-                    label: '一级 3',
-                    children: [{
-                        id: 7,
-                        label: '二级 3-1'
-                    }, {
-                        id: 8,
-                        label: '二级 3-2'
-                    }]
-                }],
+                //主页面树状列表的数据
+                data: [],
                 dialogVisible:false,
                 //新增修改表单数据
                 form: {
                     id:'',
-                    roleName:'',
+                    parentId:'',
+                    permissionName:'',
+                    path:'',
                     label: '',
-                    description:'',
+                    icon:'',
+                    isLeaf:'',
+                    type:'',
                     sort:'',
+                    description:'',
+                    systemCode:'',
+                    isSystemRoot:'',
                     enableFlag:''
                 },
                 //权限树形下拉 模糊查询keyword
@@ -175,32 +166,74 @@
                 if (!value) return true;
                 return data.label.indexOf(value) !== -1;
             },
+            //编辑（新增修改）
             edit(e){
+                //清空表单数据
+                this.form = {};
+                //获取选中的节点(用来确定父级或者修改)
+                var treeId = this.$refs.tree.getCurrentKey();
+                if(e == "add"){
+                    this.form.parentId = treeId;
+                    this.dialogVisible = true;
+                }else{
+                    editEcho(treeId).then((res) => {
+                        this.form = res.data[0];
+                        this.dialogVisible = true;
+                    }).catch(e => {
+                            console.log(e + '公共的err')
+                    })
+                }
 
+            },
+            onSubmit(){
+
+                save(this.form).then((res) => {
+                    this.$message('保存成功');
+                    this.searchReload();
+                    this.dialogVisible = false;
+                }).catch(e => {
+                    console.log(e + '保存失败')
+                })
             },
             del(){
+                var treeId = this.$refs.tree.getCurrentKey();
+                if(treeId == null || treeId == ""){
+                    this.$message('请选择一条进行删除');
+                    return ;
+                }
+                //确定删除
+                this.$confirm('确定要删除这条记录吗？').then(_ => {
+                    delById(treeId).then((res) => {
+                    this.$message('删除成功');
+                    this.searchReload();
+                }).catch(e => {
+                    this.$message('删除失败');
+                })
 
+                }).catch(_ => {});
             },
+            searchReload(){
+                search().then((res) => {
+                    this.data = res.data //将前端的数据data赋上后端的值
+                }).catch(e => {
+                        console.log(e + '公共的err')
+                })
+            }
         },
         mounted: function () {
-            search(this.pageSize,this.pageIndex).then((res) => {
-                this.tableData = res.data //将前端的数据data赋上后端的值
-                this.tableTotal = res.total;
+            search().then((res) => {
+                this.data = res.data //将前端的数据data赋上后端的值
             }).catch(e => {
                 console.log(e + '公共的err')
             })
         }
     })
 
-    function search(pageSize,pageIndex){
+    function search(){
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: '/user/list.action',
+                url: '/permission/getPermissionListTree.action',
                 data: {
-                    userVo:{},
-                    pageSize:pageSize,
-                    pageIndex:pageIndex,
-                    keyword:$("#keyword").val()
                 },
                 dataType: 'json',
                 success: function (res) {
@@ -228,7 +261,7 @@
     function editEcho(id){
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: '/user/list.action',
+                url: '/permission/list.action',
                 data: {id:id},
                 dataType: 'json',
                 success: function (res) {
@@ -250,8 +283,8 @@
     function save(formdata){
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: '/user/save.action',
-                data: {userVo:JSON.stringify(formdata)},
+                url: '/permission/save.action',
+                data: {permission:JSON.stringify(formdata)},
                 dataType: 'json',
                 type:'post',
                 success: function (res) {
@@ -270,7 +303,7 @@
     function delById(id){
         return new Promise(function (resolve, reject) {
             $.ajax({
-                url: '/user/delete.action',
+                url: '/permission/delete.action',
                 data: {id:id},
                 dataType: 'json',
                 type:'post',
