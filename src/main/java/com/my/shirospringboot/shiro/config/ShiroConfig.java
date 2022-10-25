@@ -1,6 +1,7 @@
 package com.my.shirospringboot.shiro.config;
 
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
+import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.ShiroDbRealmImpl;
 import com.my.shirospringboot.utils.PropertiesUtils;
 import lombok.extern.log4j.Log4j2;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
+import javax.servlet.Filter;
 import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -106,7 +108,10 @@ public class ShiroConfig {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         //设置权限管理器
         shiroFilterFactoryBean.setSecurityManager(this.defaultWebSecurityManager());
-        //设置过滤器-不用自己设置
+
+        //设置过滤器 一般不用自己设置
+        //设置自定义过滤器(自己写的过滤器)
+        shiroFilterFactoryBean.setFilters(this.customsFilters());
 
         //设置过滤器链
         Map<String, String> filterChainProperties = PropertiesUtils.getPropertiesMapByFileName("authentication.properties");
@@ -117,6 +122,16 @@ public class ShiroConfig {
             //设置未授权访问跳转地址
             shiroFilterFactoryBean.setUnauthorizedUrl("/account/login");
         return shiroFilterFactoryBean;
+    }
+
+    /**
+     * 自定义过滤器
+     * @return filtersMap -自定义的过滤器Map<String, Filter>集合
+     */
+    private Map<String, Filter> customsFilters(){
+        Map<String, Filter> filtersMap = new HashMap<>();
+        filtersMap.put("roles-or",new RolesOrAuthorizationFilter());
+        return filtersMap;
     }
 
 

@@ -53,6 +53,13 @@ public class ShiroUser {
     private String enableFlag;
 
 
+    //角色label列表
+    @Transient
+    private List<String> roles;
+
+    //权限label列表
+    @Transient
+    private List<String> permissions;
 
     //权限列表
     @Transient
@@ -181,6 +188,22 @@ public class ShiroUser {
 
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
+
+    public List<String> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<String> permissions) {
+        this.permissions = permissions;
     }
 
     public List<ShPermission> getPermissionList() {

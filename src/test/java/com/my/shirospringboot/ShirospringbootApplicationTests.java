@@ -147,7 +147,7 @@ class ShirospringbootApplicationTests {
 	@Test
 	public void test(){
 		String url = "https://dev-service.z7z7z7.cn/enterprise-service-platform/common/ums-site-third/clientToken";
-		long timeStamp = System.currentTimeMillis();
+		String timeStamp = String.valueOf(System.currentTimeMillis());
 		String clientId = "e18cecc5ff404827a2689c0f79ae3f51";
 		String clientSecret = "ifzxbgyiai";
 		String site = "4";

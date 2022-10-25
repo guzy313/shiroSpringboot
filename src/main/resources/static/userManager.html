@@ -56,6 +56,7 @@
             <el-button type="primary" icon="el-icon-plus" @click="edit('add')"></el-button>
             <el-button type="primary" icon="el-icon-edit" @click="edit('edit')"></el-button>
             <el-button type="primary" icon="el-icon-delete" @click="del"></el-button>
+            <el-button type="primary" icon="el-icon-delete" @click="dispatchRoles">角色分配</el-button>
             <el-button type="primary" icon="el-icon-search" @click="searchList">搜索</el-button>
         </div>
         <template>
@@ -157,9 +158,37 @@
                 <el-form-item label="地址">
                     <el-input v-model="form.address"></el-input>
                 </el-form-item>
+                <el-form-item label="是否启用">
+                    <el-select v-model="form.enableFlag" placeholder="是否启用">
+                        <el-option label="是" value="YES"></el-option>
+                        <el-option label="否" value="NO"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button @click="dialogVisible = false">取 消</el-button>
                     <el-button type="primary" @click="onSubmit">确 定</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <!-- 权限分配弹框 -->
+        <el-dialog
+                title="权限分配"
+                :visible.sync="dialogVisibleDispatchRoles"
+                width="80%"
+                :before-close="handleClose">
+            <el-form   label-width="80px">
+                <el-select ref="rolesCombobox" filterable multiple  v-model="dispatchRolesValue" placeholder="请选择">
+                    <el-option
+                            v-for="item in dispatchRolesSelectData"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value">
+                    </el-option>
+                </el-select>
+                <el-form-item>
+                    <el-button @click="dialogVisibleDispatchRoles = false">取 消</el-button>
+                    <el-button type="primary" @click="onSubmitDispatchRoles">确 定</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -181,8 +210,21 @@
                 tableTotal:0,
                 multipleSelection: [],
                 dialogVisible:false,
+                dialogVisibleDispatchRoles:false,
                 isAdd:true,//是否新增(新增则显示密码输入，修改不显示)
                 keyword:'',
+                //分配角色时候 角色下拉的 选择数据
+                dispatchRolesSelectData:[
+                    {
+                        value: '选项1',
+                        label: '黄金糕'
+                    }, {
+                        value: '选项2',
+                        label: '双皮奶'
+                    }
+                ],
+                //分配角色时候 角色下拉的 选择中数据 id1,id2,id3...
+                dispatchRolesValue:'',
                 form: {
                     id:'',
                     loginName:'',
@@ -248,6 +290,17 @@
                 //表单保存
                 console.log('submit!');
 
+            },
+            onSubmitDispatchRoles(){
+                //保存角色分配
+            },
+            dispatchRoles(){
+                //角色分配弹框
+
+                //清空上一次选中数据
+                dispatchRolesValue = '';
+
+                this.dialogVisibleDispatchRoles = true;
             },
             edit(e){
                 if(e == "add"){
