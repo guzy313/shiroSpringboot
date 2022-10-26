@@ -72,7 +72,7 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
     }
 
     /**
-     * @Description 授权
+     * @Description 授权-将用户的角色、权限标签写入令牌
      * @param principalCollection
      * @return
      */

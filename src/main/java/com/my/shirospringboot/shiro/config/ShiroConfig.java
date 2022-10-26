@@ -11,7 +11,12 @@ import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.redisson.Redisson;
+import org.redisson.api.RedissonClient;
+import org.redisson.config.Config;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +24,7 @@ import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Description 权限管理控制类
@@ -30,9 +32,47 @@ import java.util.Set;
  * @version 1.0
  */
 @Configuration
-@ComponentScan(basePackages = "com.my.shirospringboot.shiro.core")
+@ComponentScan(basePackages = {
+            "com.my.shirospringboot.shiro.core",
+            "com.my.shirospringboot.shiro.config"
+        })
 @Log4j2
 public class ShiroConfig {
+
+    /**
+     * 注入redis的配置属性
+     */
+    @Autowired
+    private ShiroRedisProperties shiroRedisProperties;
+
+    @Bean("redissonClientForShiro")
+    public RedissonClient redissonClient(){
+        //获取redis节点信息
+        String[] nodes = shiroRedisProperties.getNodes().split(",");
+        Config config = new Config();
+        //创建配置信息 1.单机redis配置 2.集群redis配置
+        //判断是集群还是单节点
+        if(nodes.length == 1){
+            //单机配置
+            config.useSingleServer().setAddress(nodes[0])
+                                    .setConnectTimeout(shiroRedisProperties.getConnectTimeout())
+                                    .setConnectionMinimumIdleSize(shiroRedisProperties.getMinIdle())
+                                    .setConnectionPoolSize(shiroRedisProperties.getMaxActive())
+                                    .setTimeout(shiroRedisProperties.getTimeout());
+        }else if(nodes.length > 1){
+            //集群配置
+            config.useClusterServers().addNodeAddress(nodes)
+                    .setConnectTimeout(shiroRedisProperties.getConnectTimeout())
+                    .setMasterConnectionMinimumIdleSize(shiroRedisProperties.getMinIdle())
+                    .setMasterConnectionPoolSize(shiroRedisProperties.getMaxActive())
+                    .setTimeout(shiroRedisProperties.getTimeout());
+        }else{
+            return null;
+        }
+        //创建redisson客户端交给spring管理
+        RedissonClient redissonClient = Redisson.create(config);
+        return redissonClient;
+    }
 
 
     //创建权限管理器(入口,MAIN！！！！！！)

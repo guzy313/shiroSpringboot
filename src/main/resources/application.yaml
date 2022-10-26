@@ -46,3 +46,14 @@ mybatis:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: false
+
+my:
+  shirospringboot:
+    shiro:
+      redis:
+        nodes: 127.0.0.1:6379
+        connect-timeout: 6000
+        min-idle: 10
+        max-active: 100
+        timeout: 6000
+        global-timeout: 25200000

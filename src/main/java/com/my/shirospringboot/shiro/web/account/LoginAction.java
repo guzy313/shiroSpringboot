@@ -7,6 +7,7 @@ import com.my.shirospringboot.shiro.vo.LoginVo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import java.util.Map;
  */
 @RequestMapping("/login")
 @Controller
+@RequiresUser
 public class LoginAction {
     private static final Logger log = LoggerFactory.getLogger(LoginAction.class);
     @Autowired
