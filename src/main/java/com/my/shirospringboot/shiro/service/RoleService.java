@@ -33,6 +33,14 @@ public interface RoleService {
     Long countRolesList(RoleVo roleVo) throws Exception;
 
     /**
+     * @Description: 查询用户已分配角色ID列表
+     * @param userId
+     * @return
+     * @throws Exception
+     */
+    List<String> findRolesList(String userId) throws Exception;
+
+    /**
      * 保存角色
      * @param roleVo
      * @return

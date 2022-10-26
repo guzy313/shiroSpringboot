@@ -181,9 +181,9 @@
                 <el-select ref="rolesCombobox" filterable multiple  v-model="dispatchRolesValue" placeholder="请选择">
                     <el-option
                             v-for="item in dispatchRolesSelectData"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            :key="item.id"
+                            :label="item.roleName"
+                            :value="item.id">
                     </el-option>
                 </el-select>
                 <el-form-item>
@@ -214,17 +214,9 @@
                 isAdd:true,//是否新增(新增则显示密码输入，修改不显示)
                 keyword:'',
                 //分配角色时候 角色下拉的 选择数据
-                dispatchRolesSelectData:[
-                    {
-                        value: '选项1',
-                        label: '黄金糕'
-                    }, {
-                        value: '选项2',
-                        label: '双皮奶'
-                    }
-                ],
+                dispatchRolesSelectData:[],
                 //分配角色时候 角色下拉的 选择中数据 id1,id2,id3...
-                dispatchRolesValue:'',
+                dispatchRolesValue:[],
                 form: {
                     id:'',
                     loginName:'',
@@ -287,20 +279,47 @@
                     this.$message('保存失败');
                     console.log(e + '公共的err')
                 })
-                //表单保存
-                console.log('submit!');
-
             },
             onSubmitDispatchRoles(){
                 //保存角色分配
+
+                var roleIds = "";
+                for(var i = 0;i < this.dispatchRolesValue.length;i ++){
+                    roleIds += this.dispatchRolesValue[i];
+                    if(i != this.dispatchRolesValue.length - 1){
+                        roleIds += ",";
+                    }
+                }
+                saveDispatchRoles(this.multipleSelection[0].id,roleIds).then((res) => {
+                    this.$message('角色分配成功');
+                    this.dialogVisibleDispatchRoles = false;
+                    this.dispatchRolesValue = '';
+                }).catch(e => {
+                        this.$message('角色分配失败');
+                    console.log(e + '公共的err')
+                })
+
             },
             dispatchRoles(){
                 //角色分配弹框
 
                 //清空上一次选中数据
                 dispatchRolesValue = '';
+                //判断是否选中了一条用户数据进行分配角色
+                if(this.multipleSelection.length != 1){
+                    this.$message('请选择一个用户进行角色分配');
+                    return;
+                }
 
-                this.dialogVisibleDispatchRoles = true;
+                getRoleList(this.multipleSelection[0].id).then((res) => {
+                    this.dispatchRolesValue = res.roleIds;
+                    this.dialogVisibleDispatchRoles = true;
+                }).catch(e => {
+                        this.$message('获取已分配角色失败');
+                    console.log(e + '公共的err')
+                })
+
+
             },
             edit(e){
                 if(e == "add"){
@@ -362,9 +381,18 @@
             }).catch(e => {
                 console.log(e + '公共的err')
             })
+
+            getRoleList().then((res) => {
+                this.dispatchRolesSelectData = res.data //将前端的数据data赋上后端的值
+            }).catch(e => {
+                    console.log(e + '公共的err')
+            })
         }
     })
 
+    /**
+     * 用户搜索
+     * */
     function search(pageSize,pageIndex){
         return new Promise(function (resolve, reject) {
             $.ajax({
@@ -393,7 +421,7 @@
     }
 
     /**
-     * 编辑回显
+     * 用户编辑回显
      * @param id
      * @param pageIndex
      * @returns {Promise<unknown>}
@@ -420,6 +448,11 @@
 
     }
 
+    /**
+     * 保存用户
+     * @param formdata
+     * @returns {Promise}
+     */
     function save(formdata){
         return new Promise(function (resolve, reject) {
             $.ajax({
@@ -440,6 +473,12 @@
             });
         })
     }
+
+    /**
+     * 删除用户
+     * @param id
+     * @returns {Promise}
+     */
     function delById(id){
         return new Promise(function (resolve, reject) {
             $.ajax({
@@ -461,5 +500,60 @@
         })
     }
 
+    /**
+     * 用户搜索
+     * */
+    function getRoleList(userId){
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/role/list.action',
+                data: {
+                    userId:userId
+                },
+                dataType: 'json',
+                success: function (res) {
+                    if (res.success) {
+                        resolve(res)
+                    } else {
+                        reject(res.message)
+                    }
+                },
+                error: function (data) {
+                    // alert("error");
+                }
+            });
+        })
+
+    }
+
+    /**
+     * 保存 用户分配角色
+     * @param formdata
+     * @returns {Promise}
+     */
+    function saveDispatchRoles(userId,roleIds){
+        console.log(roleIds)
+        return new Promise(function (resolve, reject) {
+            $.ajax({
+                url: '/user/saveDispatchRoles.action',
+                data: {
+                    userId:userId,
+                    roleIds:roleIds
+                },
+                dataType: 'json',
+                type:'post',
+                success: function (res) {
+                    if (res) {
+                        resolve(res)
+                    } else {
+                        reject(res)
+                    }
+                },
+                error: function (data) {
+                    alert("error");
+                }
+            });
+        })
+    }
 </script>
 </html>

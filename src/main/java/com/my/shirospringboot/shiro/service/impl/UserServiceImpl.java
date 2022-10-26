@@ -1,10 +1,13 @@
 package com.my.shirospringboot.shiro.service.impl;
 
+import com.my.shirospringboot.mapper.ShUserRoleMapper;
 import com.my.shirospringboot.mapper.ShUsersMapper;
+import com.my.shirospringboot.pojo.ShUserRole;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
+import com.my.shirospringboot.shiro.vo.UserRoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
 import com.my.shirospringboot.utils.BeanUtils;
 import com.my.shirospringboot.utils.DigestUtil;
@@ -15,10 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Gzy
@@ -30,6 +30,8 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private ShUsersMapper shUsersMapper;
+    @Autowired
+    private ShUserRoleMapper shUserRoleMapper;
 
 
     @Override
@@ -122,6 +124,27 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Boolean saveDispatchRoles(UserRoleVo userRoleVo) throws Exception {
+        if(StringUtils.isEmpty(userRoleVo.getUserId())){
+            //用户为空不允许保存
+            return false;
+        }
+        //在保存当前用户的角色之前先把之前分配的角色全部删一次
+        //封装用户id进Map作为删除 用户角色关联表 数据的条件
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("userId",userRoleVo.getUserId());
+        int deleteUserRoleByUserId = shUserRoleMapper.deleteByMap(paramMap);
+        List<String> roleIds = Arrays.asList(userRoleVo.getRoleIds().split(","));
+        for (String s:roleIds) {
+            ShUserRole shUserRole = new ShUserRole();
+            shUserRole.setUserId(userRoleVo.getUserId());
+            shUserRole.setRoleId(s);
+            shUserRole.setEnableFlag(SuperConstant.YES);
+            shUserRoleMapper.insert(shUserRole);
+        }
+        return true;
+    }
 
     /**
      * @Description 对用户视图对象的密码进行散列加密

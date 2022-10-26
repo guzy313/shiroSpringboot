@@ -3,7 +3,10 @@ package com.my.shirospringboot.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.my.shirospringboot.pojo.ShUserRole;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @author Gzy
@@ -13,4 +16,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Mapper
 public interface ShUserRoleMapper extends BaseMapper<ShUserRole> {
+
+    @Select("select * from sh_user_role where userId = #{userId} ")
+    List<ShUserRole> findRoleSByUserId(String userId);
+
+
+
 }

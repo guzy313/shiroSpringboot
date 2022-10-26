@@ -3,8 +3,10 @@ package com.my.shirospringboot.shiro.service.impl;
 import com.my.shirospringboot.mapper.ShPermissionMapper;
 import com.my.shirospringboot.mapper.ShRolePermissionMapper;
 import com.my.shirospringboot.mapper.ShRolesMapper;
+import com.my.shirospringboot.mapper.ShUserRoleMapper;
 import com.my.shirospringboot.pojo.ShRolePermission;
 import com.my.shirospringboot.pojo.ShRoles;
+import com.my.shirospringboot.pojo.ShUserRole;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.RoleService;
@@ -27,6 +29,8 @@ import java.util.*;
 public class RoleServiceImpl implements RoleService {
     @Autowired
     private ShRolesMapper shRolesMapper;
+    @Autowired
+    private ShUserRoleMapper shUserRoleMapper;
     @Autowired
     private ShRolePermissionMapper shRolePermissionMapper;
 
@@ -67,7 +71,7 @@ public class RoleServiceImpl implements RoleService {
             //实现分页的序号功能 并且转换成Map List
             resultList = PageUtils.paging(list,pageSize,pageIndex);
         }else{
-            resultList = new ArrayList<>();
+            resultList = BeanUtils.objectListToMapList(list);
         }
         return resultList;
     }
@@ -82,6 +86,16 @@ public class RoleServiceImpl implements RoleService {
         //直接查询全部角色列表 的数量
         List<ShRoles> list = shRolesMapper.findAll();
         return Long.parseLong(String.valueOf(list.size())) ;
+    }
+
+    @Override
+    public List<String> findRolesList(String userId) throws Exception {
+        List<ShUserRole> roleSByUserId = shUserRoleMapper.findRoleSByUserId(userId);
+        List<String> roleIds = new ArrayList<>();
+        for (ShUserRole s:roleSByUserId ) {
+            roleIds.add(s.getRoleId());
+        }
+        return roleIds;
     }
 
     @Override

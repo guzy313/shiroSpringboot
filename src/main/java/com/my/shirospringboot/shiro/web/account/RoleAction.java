@@ -9,6 +9,7 @@ import com.my.shirospringboot.shiro.service.impl.PermissionServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.RoleServiceImpl;
 import com.my.shirospringboot.shiro.vo.RoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
+import com.my.shirospringboot.utils.StringUtils;
 import org.apache.shiro.authz.annotation.Logical;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,10 +66,18 @@ public class RoleAction {
         String keyword = request.getParameter("keyword");
         RoleVo roleVo = new RoleVo();//防止空指针
         roleVo.setId(id);
+        //用户分配角色查询回显用
+        String userId = request.getParameter("userId");
         try {
             List<Map<String,Object>> list =  roleService.findRolesList(roleVo,pageSize,pageIndex,keyword);
             Long total = roleService.countRolesList(roleVo);
             ModelMap modelMap = new ModelMap();
+            ///////用户分配角色查询回显用///////
+            if(StringUtils.isNotEmpty(userId)){
+                List<String> rolesList = roleService.findRolesList(userId);
+                modelMap.addAttribute("roleIds",rolesList);
+            }
+            ///////用户分配角色查询回显用///////
             modelMap.addAttribute("data",list);
             modelMap.addAttribute("total",total);
             modelMap.addAttribute("success",true);

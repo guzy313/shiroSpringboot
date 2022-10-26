@@ -6,6 +6,7 @@ import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
 import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserRoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
 import com.my.shirospringboot.utils.StringUtils;
 import org.slf4j.Logger;
@@ -105,6 +106,29 @@ public class UserAction {
 //            return false;
 //        }
 //    }
+
+
+    /**
+     * @Description: 保存 用户分配角色
+     * @param
+     * @return boolean
+     */
+    @RequestMapping("/saveDispatchRoles.action")
+    @ResponseBody
+    public Boolean saveDispatchRoles(HttpServletRequest request){
+        String userId = request.getParameter("userId");
+        String roleIds = request.getParameter("roleIds");
+        UserRoleVo userRoleVo = new UserRoleVo();
+        userRoleVo.setUserId(userId);
+        userRoleVo.setRoleIds(roleIds);
+        try {
+            return userService.saveDispatchRoles(userRoleVo);
+        }catch (Exception e){
+            log.error("用户分配角色失败",e.getMessage());
+            return false;
+        }
+    }
+
 
     /**
      * @Description: 删除用户信息

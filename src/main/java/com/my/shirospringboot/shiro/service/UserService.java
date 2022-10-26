@@ -3,6 +3,7 @@ package com.my.shirospringboot.shiro.service;
 import com.my.shirospringboot.pojo.ShRoles;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.vo.RoleVo;
+import com.my.shirospringboot.shiro.vo.UserRoleVo;
 import com.my.shirospringboot.shiro.vo.UserVo;
 
 import java.util.List;
@@ -56,6 +57,15 @@ public interface UserService {
      * @throws Exception
      */
     Boolean deleteUser(UserVo userVo) throws Exception;
+
+    /**
+     * @Description: 保存 用户分配角色
+     * @param userVo
+     * @return
+     * @throws Exception
+     */
+    Boolean saveDispatchRoles(UserRoleVo userRoleVo) throws Exception;
+
 
     /**
      * @Description: 验证用户名唯一
