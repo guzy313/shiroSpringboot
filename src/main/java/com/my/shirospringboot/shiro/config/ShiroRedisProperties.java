@@ -12,10 +12,14 @@ import java.io.Serializable;
  * @version 1.0
  * @Description
  */
-@Component
+//@Component
 @ConfigurationProperties(prefix = "my.shirospringboot.shiro.redis")
 public class ShiroRedisProperties implements Serializable{
 
+    /**
+     * redis连接密码
+     */
+    private String password;
     /**
      * redis连接地址
      */
@@ -46,6 +50,14 @@ public class ShiroRedisProperties implements Serializable{
      */
     private int globalTimeout;
 
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getNodes() {
         return nodes;

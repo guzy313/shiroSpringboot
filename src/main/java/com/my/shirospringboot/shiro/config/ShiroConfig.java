@@ -31,22 +31,18 @@ import java.util.*;
  * @author Gzy
  * @version 1.0
  */
-@Configuration
 @ComponentScan(basePackages = {
-            "com.my.shirospringboot.shiro.core",
-            "com.my.shirospringboot.shiro.config"
-        })
+        "com.my.shirospringboot.shiro.core",
+        "com.my.shirospringboot.shiro.config"
+})
+@EnableConfigurationProperties({ShiroRedisProperties.class})
+@Configuration
 @Log4j2
 public class ShiroConfig {
 
-    /**
-     * 注入redis的配置属性
-     */
-    @Autowired
-    private ShiroRedisProperties shiroRedisProperties;
 
     @Bean("redissonClientForShiro")
-    public RedissonClient redissonClient(){
+    public RedissonClient redissonClient(ShiroRedisProperties shiroRedisProperties){
         //获取redis节点信息
         String[] nodes = shiroRedisProperties.getNodes().split(",");
         Config config = new Config();
@@ -58,14 +54,16 @@ public class ShiroConfig {
                                     .setConnectTimeout(shiroRedisProperties.getConnectTimeout())
                                     .setConnectionMinimumIdleSize(shiroRedisProperties.getMinIdle())
                                     .setConnectionPoolSize(shiroRedisProperties.getMaxActive())
-                                    .setTimeout(shiroRedisProperties.getTimeout());
+                                    .setTimeout(shiroRedisProperties.getTimeout())
+                                    .setPassword(shiroRedisProperties.getPassword());
         }else if(nodes.length > 1){
             //集群配置
             config.useClusterServers().addNodeAddress(nodes)
                     .setConnectTimeout(shiroRedisProperties.getConnectTimeout())
                     .setMasterConnectionMinimumIdleSize(shiroRedisProperties.getMinIdle())
                     .setMasterConnectionPoolSize(shiroRedisProperties.getMaxActive())
-                    .setTimeout(shiroRedisProperties.getTimeout());
+                    .setTimeout(shiroRedisProperties.getTimeout())
+                    .setPassword(shiroRedisProperties.getPassword());
         }else{
             return null;
         }
