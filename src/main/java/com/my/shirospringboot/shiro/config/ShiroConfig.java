@@ -98,6 +98,8 @@ public class ShiroConfig {
     //创建自定义realm
     @Bean(value = "shiroDbRealm")
     public ShiroDbRealm shiroDbRealm(){
+        ShiroDbRealm shiroDbRealm = new ShiroDbRealmImpl();
+        shiroDbRealm.setCachingEnabled(true);
         return new ShiroDbRealmImpl();
     }
 

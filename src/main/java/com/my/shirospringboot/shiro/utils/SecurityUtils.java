@@ -5,6 +5,7 @@ import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.utils.BeanUtils;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 
 import java.util.ArrayList;
@@ -49,6 +50,13 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
         return permissionList;
     }
 
-
+    /**
+     * @Description: 获取当前会话
+     * @return
+     */
+    public static Session getShiroSession(){
+        Subject subject = SecurityUtils.getSubject();
+        return subject.getSession();
+    }
 
 }
