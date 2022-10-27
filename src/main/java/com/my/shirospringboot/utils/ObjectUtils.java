@@ -75,4 +75,12 @@ public class ObjectUtils {
             }
             return value;
         }
+
+        public static boolean isNullOrEmpty(Object object){
+            if("" == object || null == object){
+                return true;
+            }else{
+                return false;
+            }
+        }
 }
