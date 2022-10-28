@@ -7,8 +7,10 @@ import com.my.shirospringboot.pojo.ShUsers;
 import com.my.shirospringboot.shiro.core.adapter.ShUserAdapter;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.core.bridge.ShUsersBridgeService;
+import com.my.shirospringboot.shiro.core.impl.SimpleCacheServiceImpl;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
+import org.apache.shiro.cache.Cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,9 +26,14 @@ import java.util.List;
 public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
     @Autowired
     private ShUserAdapter shUserAdapter;
+    //缓存
+    private SimpleCacheServiceImpl simpleCacheService;
+
 
     @Override
     public ShUsers findUserByLoginName(String loginName){
+        Cache<Object, Object> cache = simpleCacheService.getCache(loginName);
+        //TODO
         List<ShUsers> shUsersList = shUserAdapter.findUserByLoginName(loginName);
         if(shUsersList.size() == 1){
             return shUsersList.get(0);
@@ -109,5 +116,10 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
         authorizationInfo.addStringPermissions(permissionLabels);//将权限标签 存入 授权信息
 
         return authorizationInfo;
+    }
+
+    @Override
+    public void loadUserAuthorityToCache(ShiroUser shiroUser) {
+
     }
 }

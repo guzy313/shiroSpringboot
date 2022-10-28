@@ -85,4 +85,10 @@ public interface ShUsersBridgeService {
      */
     AuthorizationInfo getAuthorizationInfo(ShiroUser shiroUser);
 
+    /**
+     * @Description 将登录信息写入缓存
+     * @param shiroUser
+     */
+    void loadUserAuthorityToCache(ShiroUser shiroUser);
+
 }
