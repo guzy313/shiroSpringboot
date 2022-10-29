@@ -59,4 +59,13 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
         return subject.getSession();
     }
 
+    /**
+     * @Description: 获取当前会话ID
+     * @return
+     */
+    public static String getShiroSessionId(){
+        Subject subject = SecurityUtils.getSubject();
+        return subject.getSession().getId().toString();
+    }
+
 }

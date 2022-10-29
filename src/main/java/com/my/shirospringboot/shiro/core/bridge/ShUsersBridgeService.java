@@ -34,11 +34,11 @@ public interface ShUsersBridgeService {
 
 
     /**
-     * @Description 通过 用户ID 查询 角色标签列表
-     * @param userId
+     * @Description 通过 缓存名称(角色常量+当前会话ID),用户ID 查询 角色标签列表
+     * @param key,userId
      * @return Labels
      */
-    List<String> findRoleLabelsByUserId(String userId);
+    List<String> findRoleLabelsByUserId(String key,String userId);
 
 
     /**
@@ -64,18 +64,18 @@ public interface ShUsersBridgeService {
     List<ShPermission> findAllPermissions();
 
     /**
-     * @Description 通过用户ID查询 权限集合
+     * @Description 通过用户ID查询 权限集合 userName用来判断是否管理员权限
      * @param userId
      * @return
      */
-    List<ShPermission> findPermissionsByUserId(String userId);
+    List<ShPermission> findPermissionsByUserId(String userName,String userId);
 
     /**
-     * @Description 通过用户ID查询 权限标签集合
-     * @param userId
+     * @Description 通过 缓存名称(角色常量+当前会话ID), 用户ID查询 权限标签集合
+     * @param key,userId
      * @return
      */
-    List<String> findPermissionLabelsByUserId(String userId);
+    List<String> findPermissionLabelsByUserId(String key,String userId);
 
 
     /**
@@ -86,7 +86,7 @@ public interface ShUsersBridgeService {
     AuthorizationInfo getAuthorizationInfo(ShiroUser shiroUser);
 
     /**
-     * @Description 将登录信息写入缓存
+     * @Description 将登录信息(角色、权限标签)写入缓存（查询方法内有判断是否存在缓存逻辑）
      * @param shiroUser
      */
     void loadUserAuthorityToCache(ShiroUser shiroUser);

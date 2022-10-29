@@ -31,12 +31,11 @@ import java.util.*;
  * @author Gzy
  * @version 1.0
  */
-@ComponentScan(basePackages = {
-        "com.my.shirospringboot.shiro.core",
-        "com.my.shirospringboot.shiro.config"
-})
-@EnableConfigurationProperties({ShiroRedisProperties.class})
+
+
 @Configuration
+@EnableConfigurationProperties({ShiroRedisProperties.class})
+@ComponentScan(basePackages = {"com.my.shirospringboot.shiro.core",})
 @Log4j2
 public class ShiroConfig {
 
