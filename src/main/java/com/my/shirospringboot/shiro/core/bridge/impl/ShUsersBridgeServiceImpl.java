@@ -127,8 +127,8 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
     public List<ShPermission> findPermissionsByUserId(String userName,String userId) {
         List<ShPermission> shPermissionList = null;
         String sessionId = SecurityUtils.getShiroSessionId();
-        //此处缓存是根据每次会话不同更新
-        String cacheKey = CacheConstant.PERMISSION_KEY_IDS + sessionId;
+        //此处缓存是根据每次会话不同更新(资源/权限对象缓存)
+        String cacheKey = CacheConstant.PERMISSION_KEY + sessionId;
         //获取缓存
         Cache<Object, Object> permissionsCache = simpleCacheService.getCache(cacheKey);
         //判断是否存在缓存

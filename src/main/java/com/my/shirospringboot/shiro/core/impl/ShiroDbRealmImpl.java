@@ -2,13 +2,14 @@ package com.my.shirospringboot.shiro.core.impl;
 
 import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.pojo.ShUsers;
+import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.core.base.SimpleToken;
 import com.my.shirospringboot.shiro.core.bridge.impl.ShUsersBridgeServiceImpl;
+import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.utils.BeanUtils;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -32,7 +33,8 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
     @Autowired
     private ShUsersBridgeServiceImpl shUsersBridgeService;
 
-
+    @Autowired
+    private SimpleCacheServiceImpl simpleCacheService;
 
 
     /**
@@ -75,6 +77,33 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
 
         return authorizationInfo;
     }
+
+    /**
+     * @Description: 重写清除缓存方法
+     * @param principals
+     */
+    @Override
+    protected void doClearCache(PrincipalCollection principals) {
+        super.doClearCache(principals);
+        ///////////以下为需要清除的自定义缓存////////////
+        //根据不同会话ID获取缓存
+        ShiroUser shiroUser = (ShiroUser)principals.getPrimaryPrincipal();
+        String sessionId = SecurityUtils.getShiroSessionId();
+        //登录用户名称缓存
+        String loginName = CacheConstant.FIND_USER_BY_LOGINNAME + shiroUser.getLoginName();
+        //角色标签 缓存
+        String roleLabelKey = CacheConstant.ROLE_LABEL_KEY + sessionId;
+        //资源/权限标签 缓存
+        String permissionLabelKey = CacheConstant.PERMISSION_LABEL_KEY + sessionId;
+        //资源/权限 对象 缓存
+        String permissionsKey = CacheConstant.PERMISSION_KEY + sessionId;
+
+        simpleCacheService.removeCache(loginName);
+        simpleCacheService.removeCache(roleLabelKey);
+        simpleCacheService.removeCache(permissionLabelKey);
+        simpleCacheService.removeCache(permissionsKey);
+    }
+
 
     @Override
     public void initCredentialsMatcher() {

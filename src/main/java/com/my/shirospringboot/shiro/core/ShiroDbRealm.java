@@ -32,6 +32,11 @@ public abstract class ShiroDbRealm extends AuthorizingRealm {
     protected abstract AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException;
 
 
+    @Override
+    protected void doClearCache(PrincipalCollection principals) {
+        super.doClearCache(principals);
+    }
+
     /**
      * @Description 自定义密码比较器
      */
