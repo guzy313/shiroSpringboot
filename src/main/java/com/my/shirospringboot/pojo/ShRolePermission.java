@@ -2,13 +2,16 @@ package com.my.shirospringboot.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.io.Serializable;
+
 /**
  * @author Gzy
  * @version 1.0
  * @Description 角色-权限对应关系表
  */
 @TableName("sh_role_permission")
-public class ShRolePermission {
+public class ShRolePermission implements Serializable {
+    private static final long serialVersionUID = 1L;
     private String id;
     private String enableFlag;
     private String roleId;

@@ -113,6 +113,7 @@ public class BeanUtils {
         Map<String,Object> map = new HashMap<>();
         Field[] declaredFields = o.getClass().getDeclaredFields();
         for (Field f:declaredFields ) {
+            if("serialVersionUID".equals(f.getName()))continue;//序列化字段忽略
             map.put(f.getName(),ObjectUtils.getFieldValueByName(f.getName(), o));
         }
         return map;

@@ -2,13 +2,16 @@ package com.my.shirospringboot.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.io.Serializable;
+
 /**
  * @author guzy
  * @version 1.0
  * @description
  */
 @TableName("sh_permission")
-public class ShPermission {
+public class ShPermission implements Serializable {
+    private static final long serialVersionUID = 1L;
     //主键
     private String id;
     //父ID

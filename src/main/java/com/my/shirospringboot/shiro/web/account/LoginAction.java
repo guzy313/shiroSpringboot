@@ -28,7 +28,6 @@ import java.util.Map;
  */
 @RequestMapping("/login")
 @Controller
-@RequiresUser
 public class LoginAction {
     private static final Logger log = LoggerFactory.getLogger(LoginAction.class);
     @Autowired

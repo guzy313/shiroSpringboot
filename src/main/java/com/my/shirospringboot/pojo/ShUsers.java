@@ -3,13 +3,17 @@ package com.my.shirospringboot.pojo;
 import com.alibaba.druid.sql.visitor.functions.Char;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import java.io.Serializable;
+
 /**
  * @author guzy
  * @version 1.0
  * @description shiroUsers 用户表
  */
 @TableName("sh_users")
-public class ShUsers {
+public class ShUsers implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     //主键
     private String id;
@@ -162,6 +166,8 @@ public class ShUsers {
     public void setEnableFlag(String enableFlag) {
         this.enableFlag = enableFlag;
     }
+
+
 
     @Override
     public String toString() {

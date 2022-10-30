@@ -138,7 +138,7 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
         }else{
             if(SuperConstant.ADMINISTRATOR_NAME.equals(userName)){
                 //获取所有权限-管理员
-                shUserAdapter.findAllPermissions();
+                shPermissionList = shUserAdapter.findAllPermissions();
             }else{
                 //查询拥有的权限-普通用户
                 shPermissionList = shUserAdapter.findPermissionsByUserId(userId);

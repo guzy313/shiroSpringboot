@@ -35,7 +35,7 @@ import java.util.*;
 
 @Configuration
 @EnableConfigurationProperties({ShiroRedisProperties.class})
-@ComponentScan(basePackages = {"com.my.shirospringboot.shiro.core",})
+@ComponentScan(basePackages = {"com.my.shirospringboot.shiro.core"})
 @Log4j2
 public class ShiroConfig {
 
