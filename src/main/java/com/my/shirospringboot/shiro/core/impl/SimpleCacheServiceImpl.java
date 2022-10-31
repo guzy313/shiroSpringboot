@@ -46,7 +46,7 @@ public class SimpleCacheServiceImpl implements SimpleCacheService {
     @Override
     public void updateCache(String cacheName, Cache<Object, Object> cache) {
         RBucket<String> bucket = redissonClient.getBucket(cacheName);
-        bucket.trySet(ShiroRedissonSerialize.serialize(cache),
+        bucket.set(ShiroRedissonSerialize.serialize(cache),
                 SecurityUtils.getShiroSession().getTimeout()/1000, TimeUnit.SECONDS);
     }
 }

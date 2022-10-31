@@ -1,7 +1,5 @@
 package com.my.shirospringboot.shiro.config;
 
-import lombok.Setter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  * @Description
  */
-//@Component
+@Component
 @ConfigurationProperties(prefix = "my.shirospringboot.shiro.redis")
 public class ShiroRedisProperties implements Serializable{
 
@@ -48,8 +46,7 @@ public class ShiroRedisProperties implements Serializable{
     /**
      * 全局超时时间
      */
-    private int globalTimeout;
-
+    private long globalTimeout;
 
     public String getPassword() {
         return password;
@@ -99,11 +96,11 @@ public class ShiroRedisProperties implements Serializable{
         this.timeout = timeout;
     }
 
-    public int getGlobalTimeout() {
+    public long getGlobalTimeout() {
         return globalTimeout;
     }
 
-    public void setGlobalTimeout(int globalTimeout) {
+    public void setGlobalTimeout(long globalTimeout) {
         this.globalTimeout = globalTimeout;
     }
 }

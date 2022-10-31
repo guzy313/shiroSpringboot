@@ -12,7 +12,7 @@ import java.util.List;
  * @version 1.0
  * @description shiroUsers 用户 +权限列表vo
  */
-public class ShiroUser {
+public class ShiroUser{
     public ShiroUser() {
     }
 
