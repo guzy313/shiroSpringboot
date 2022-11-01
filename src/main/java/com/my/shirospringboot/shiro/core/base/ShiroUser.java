@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.my.shirospringboot.pojo.ShPermission;
 import org.springframework.data.annotation.Transient;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  * @version 1.0
  * @description shiroUsers 用户 +权限列表vo
  */
-public class ShiroUser{
+public class ShiroUser implements Serializable{
     public ShiroUser() {
     }
 

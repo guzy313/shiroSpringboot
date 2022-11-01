@@ -102,7 +102,8 @@ public class RoleServiceImpl implements RoleService {
     public boolean saveOrUpdateRole(RoleVo roleVo) throws Exception {
         if(!StringUtils.hasLength(roleVo.getId())){
             //新增
-            ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
+            ShRoles shRoles = new ShRoles();
+            BeanUtils.copyPropertiesIgnoreNull(roleVo,shRoles);
             int insert = shRolesMapper.insert(shRoles);
             if(insert > 0){
                 //开始保存角色对应的权限关系
@@ -120,7 +121,8 @@ public class RoleServiceImpl implements RoleService {
             }
         }else{
             //修改
-            ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
+            ShRoles shRoles = new ShRoles();
+            BeanUtils.copyPropertiesIgnoreNull(roleVo,shRoles);
             int update = shRolesMapper.updateById(shRoles);
             if(update > 0){
                 //开始更新角色对应的权限关系

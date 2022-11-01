@@ -6,6 +6,8 @@ import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.service.impl.PermissionServiceImpl;
 import com.my.shirospringboot.shiro.vo.PermissionVo;
+import org.apache.shiro.authz.annotation.RequiresRoles;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

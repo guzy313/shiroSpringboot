@@ -91,6 +91,7 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
             }
             //写入缓存
             Map<Object,Object> cacheMap = new HashMap<>();
+            cacheMap.put(key,roleLabelList);
             Cache<Object,Object> simpleCache = new SimpleMapCache(cacheMap,key);
             simpleCacheService.createCache(key,simpleCache);
         }

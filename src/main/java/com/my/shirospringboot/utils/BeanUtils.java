@@ -36,6 +36,7 @@ public class BeanUtils {
                //获取父类字段
                Field[] oParentFields = o.getClass().getSuperclass().getDeclaredFields();
                for (Field oF:oParentFields ) {
+                   if("serialVersionUID".equals(oF.getName()))continue;//序列化字段忽略
                    map.put(oF.getName(),ObjectUtils.getFieldValueByName(oF.getName(),o));
                }
            }
@@ -65,6 +66,7 @@ public class BeanUtils {
             Map<String,Object> map = new HashMap<>();
             //本类属性
             for (Field oF:oFields ) {
+                if("serialVersionUID".equals(oF.getName()))continue;//序列化字段忽略
                 map.put(oF.getName(),ObjectUtils.getFieldValueByName(oF.getName(),o));
             }
 
