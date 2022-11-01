@@ -74,6 +74,7 @@ public class LoginAction {
             log.info("登录失败");
             return modelAndView;
         }
+        System.out.println("是否认证:"+SecurityUtils.getSubject().isAuthenticated());
         modelAndView.setViewName("redirect:/menus/system");
         return modelAndView;
     }

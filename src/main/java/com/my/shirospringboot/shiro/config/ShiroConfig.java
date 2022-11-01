@@ -40,9 +40,9 @@ import java.util.*;
 @ComponentScan(basePackages = {"com.my.shirospringboot.shiro.core"})
 @Log4j2
 public class ShiroConfig {
-//
-//    @Autowired
-//    private ShiroRedisProperties shiroRedisProperties;
+
+    @Autowired
+    private ShiroRedisProperties shiroRedisProperties;
 
     /**
      * @Description: 权限(调用redis)缓存(redisson)客户端
@@ -50,7 +50,7 @@ public class ShiroConfig {
      * @return
      */
     @Bean("redissonClientForShiro")
-    public RedissonClient redissonClient(ShiroRedisProperties shiroRedisProperties){
+    public RedissonClient redissonClient(){
         //获取redis节点信息
         String[] nodes = shiroRedisProperties.getNodes().split(",");
         Config config = new Config();
@@ -83,12 +83,12 @@ public class ShiroConfig {
 
     //创建权限管理器(入口,MAIN！！！！！！)
     @Bean
-    public DefaultWebSecurityManager defaultWebSecurityManager(ShiroRedisProperties shiroRedisProperties){
+    public DefaultWebSecurityManager defaultWebSecurityManager(){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //管理realm
         securityManager.setRealm(this.shiroDbRealm());
         //管理会话
-        securityManager.setSessionManager(this.sessionManager(shiroRedisProperties));
+        securityManager.setSessionManager(this.sessionManager());
         return securityManager;
     }
 
@@ -119,18 +119,18 @@ public class ShiroConfig {
     @Bean
     public RedisSessionDao redisSessionDao(){
         RedisSessionDao redisSessionDao = new RedisSessionDao();
+        redisSessionDao.setGlobalTimeout(shiroRedisProperties.getGlobalTimeout());
         //构造器中已经从配置文件中读取 设置了 全局超时时间
         return redisSessionDao;
     }
 
     //创建会话管理器
     @Bean
-    public DefaultWebSessionManager sessionManager(ShiroRedisProperties shiroRedisProperties){
+    public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
-//        RedisSessionDao redisSessionDao = this.redisSessionDao();
-//        redisSessionDao.setGlobalTimeout(shiroRedisProperties.getGlobalTimeout());
-//        sessionManager.setSessionDAO(redisSessionDao);
+        RedisSessionDao redisSessionDao = this.redisSessionDao();
+        sessionManager.setSessionDAO(redisSessionDao);
         //关闭会话更新(因为没有配置会话定时任务,所以直接用最下面的设置过期时间,性能消耗比较大)
         sessionManager.setSessionValidationSchedulerEnabled(false);
         //设置cookie状态为开启(生效cookie)
@@ -144,34 +144,34 @@ public class ShiroConfig {
     }
 
     //创建生命周期管理
-    @Bean(value = "lifecycleBeanPostProcessor")
-    public  LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
-        return new LifecycleBeanPostProcessor();
-    }
+//    @Bean(value = "lifecycleBeanPostProcessor")
+//    public  LifecycleBeanPostProcessor lifecycleBeanPostProcessor(){
+//        return new LifecycleBeanPostProcessor();
+//    }
 
     //创建AOP增强(使用注解授权方式)
-    @Bean
-    @DependsOn(value = "lifecycleBeanPostProcessor")
-    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator(){
-        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
-        advisorAutoProxyCreator.setProxyTargetClass(true);
-        return advisorAutoProxyCreator;
-    }
+//    @Bean
+//    @DependsOn(value = "lifecycleBeanPostProcessor")
+//    public DefaultAdvisorAutoProxyCreator getDefaultAdvisorAutoProxyCreator(){
+//        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+//        advisorAutoProxyCreator.setProxyTargetClass(true);
+//        return advisorAutoProxyCreator;
+//    }
 
     //配合DefaultAdvisorAutoProxyCreator 事项注解权限校验
     @Bean
     public AuthorizationAttributeSourceAdvisor getAuthorizationAttributeSourceAdvisor(ShiroRedisProperties shiroRedisProperties){
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
-        authorizationAttributeSourceAdvisor.setSecurityManager(defaultWebSecurityManager(shiroRedisProperties));
+        authorizationAttributeSourceAdvisor.setSecurityManager(defaultWebSecurityManager());
         return authorizationAttributeSourceAdvisor;
     }
 
     //创建shiro过滤器管理
     @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(ShiroRedisProperties shiroRedisProperties){
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(){
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         //设置权限管理器
-        shiroFilterFactoryBean.setSecurityManager(this.defaultWebSecurityManager(shiroRedisProperties));
+        shiroFilterFactoryBean.setSecurityManager(this.defaultWebSecurityManager());
 
         //设置过滤器 一般不用自己设置
         //设置自定义过滤器(自己写的过滤器)

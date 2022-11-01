@@ -12,7 +12,7 @@ public class ShirospringbootApplication {
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext run = SpringApplication.run(ShirospringbootApplication.class, args);
-//		String[] beanDefinitionNames = run.getBeanDefinitionNames();
+		String[] beanDefinitionNames = run.getBeanDefinitionNames();
 //		for (String s:beanDefinitionNames
 //			 ) {
 //			if(s.contains("ShiroRedisProperties")){
