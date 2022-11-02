@@ -46,11 +46,10 @@ public class RedisSessionDao extends EnterpriseCacheSessionDAO {
     @Override
     protected Serializable doCreate(Session session) {
         //创建唯一标识sessionID
-//        Serializable sessionId = generateSessionId(session);
+        Serializable sessionId = generateSessionId(session);
 //        //为session会话指定唯一的sessionID
-//        assignSessionId(session,sessionId);
+        assignSessionId(session,sessionId);
         //调用父类方法
-        Serializable sessionId = super.doCreate(session);
 
         //将session会话放入redis缓存中(当前会话缓存)
         String key = CacheConstant.GROUP_CAS + sessionId.toString();
@@ -75,10 +74,10 @@ public class RedisSessionDao extends EnterpriseCacheSessionDAO {
         //将取出的会话对象(String类型)进行反序列化成Object对象，强制类型转换 还原成Session
         Session session = (Session)ShiroRedissonSerialize.deserialize(bucket.get());
 
-        //从缓存和内存两个地方读取
-        if(ObjectUtils.isNullOrEmpty(session)){
-            session = super.doReadSession(sessionId);
-        }
+//        //从缓存和内存两个地方读取
+//        if(ObjectUtils.isNullOrEmpty(session)){
+//            session = super.doReadSession(sessionId);
+//        }
 
         return session;
     }
@@ -97,7 +96,7 @@ public class RedisSessionDao extends EnterpriseCacheSessionDAO {
         RBucket<String> bucket = redissonClient.getBucket(key);
         bucket.set(ShiroRedissonSerialize.serialize(session),this.globalTimeout/1000,TimeUnit.SECONDS);
 
-        super.update(session);
+//        super.update(session);
     }
 
     /**
@@ -113,7 +112,7 @@ public class RedisSessionDao extends EnterpriseCacheSessionDAO {
         RBucket<String> bucket = redissonClient.getBucket(key);
         bucket.delete();
 
-        super.delete(session);
+//        super.delete(session);
     }
 
 //    /**
