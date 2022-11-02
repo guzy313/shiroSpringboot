@@ -2,10 +2,13 @@ package com.my.shirospringboot.shiro.core.impl;
 
 import com.my.shirospringboot.shiro.config.ShiroRedisProperties;
 import com.my.shirospringboot.shiro.constant.CacheConstant;
+import com.my.shirospringboot.utils.ObjectUtils;
 import com.my.shirospringboot.utils.ShiroRedissonSerialize;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
+import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
+import org.apache.shiro.session.mgt.eis.MemorySessionDAO;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  * @version 1.0
  * @Description: 自定义统一sessionDao 实现(redis会话管理Dao)
  */
-public class RedisSessionDao extends AbstractSessionDAO{
+public class RedisSessionDao extends EnterpriseCacheSessionDAO {
     /**
      * @Description: 注入redisson客户端类
      */
@@ -31,7 +34,7 @@ public class RedisSessionDao extends AbstractSessionDAO{
 
 
     /**
-     * @Description: 全局超时时间
+     * @Description: 全局超时时间(ms 毫秒)
      */
     private long globalTimeout;
 
@@ -43,9 +46,12 @@ public class RedisSessionDao extends AbstractSessionDAO{
     @Override
     protected Serializable doCreate(Session session) {
         //创建唯一标识sessionID
-        Serializable sessionId = generateSessionId(session);
-        //为session会话指定唯一的sessionID
-        assignSessionId(session,sessionId);
+//        Serializable sessionId = generateSessionId(session);
+//        //为session会话指定唯一的sessionID
+//        assignSessionId(session,sessionId);
+        //调用父类方法
+        Serializable sessionId = super.doCreate(session);
+
         //将session会话放入redis缓存中(当前会话缓存)
         String key = CacheConstant.GROUP_CAS + sessionId.toString();
         RBucket<String> bucket = redissonClient.getBucket(key);
@@ -68,6 +74,12 @@ public class RedisSessionDao extends AbstractSessionDAO{
         RBucket<String> bucket = redissonClient.getBucket(key);
         //将取出的会话对象(String类型)进行反序列化成Object对象，强制类型转换 还原成Session
         Session session = (Session)ShiroRedissonSerialize.deserialize(bucket.get());
+
+        //从缓存和内存两个地方读取
+        if(ObjectUtils.isNullOrEmpty(session)){
+            session = super.doReadSession(sessionId);
+        }
+
         return session;
     }
 
@@ -84,6 +96,8 @@ public class RedisSessionDao extends AbstractSessionDAO{
         String key = CacheConstant.GROUP_CAS + sessionId;
         RBucket<String> bucket = redissonClient.getBucket(key);
         bucket.set(ShiroRedissonSerialize.serialize(session),this.globalTimeout/1000,TimeUnit.SECONDS);
+
+        super.update(session);
     }
 
     /**
@@ -98,17 +112,19 @@ public class RedisSessionDao extends AbstractSessionDAO{
         String key = CacheConstant.GROUP_CAS + sessionId;
         RBucket<String> bucket = redissonClient.getBucket(key);
         bucket.delete();
+
+        super.delete(session);
     }
 
-    /**
-     * @Description: 获取当前活跃的用户数量
-     * @return
-     */
-    @Override
-    public Collection<Session> getActiveSessions() {
-        // TODO -方案1 精准-存储对象 方案2 存储数量 (添加计数器)
-        return Collections.emptySet();
-    }
+//    /**
+//     * @Description: 获取当前活跃的用户数量
+//     * @return
+//     */
+//    @Override
+//    public Collection<Session> getActiveSessions() {
+//        // TODO -方案1 精准-存储对象 方案2 存储数量 (添加计数器)
+//        return Collections.emptySet();
+//    }
 
     public void setGlobalTimeout(long globalTimeout) {
         this.globalTimeout = globalTimeout;
