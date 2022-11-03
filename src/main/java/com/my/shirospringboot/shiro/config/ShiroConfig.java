@@ -2,6 +2,7 @@ package com.my.shirospringboot.shiro.config;
 
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
+import com.my.shirospringboot.shiro.core.impl.RedisCacheManager;
 import com.my.shirospringboot.shiro.core.impl.RedisSessionDao;
 import com.my.shirospringboot.shiro.core.impl.ShiroDbRealmImpl;
 import com.my.shirospringboot.utils.PropertiesUtils;
@@ -124,13 +125,21 @@ public class ShiroConfig {
         return redisSessionDao;
     }
 
+    @Bean
+    public RedisCacheManager redisCacheManager(){
+        return new RedisCacheManager();
+    }
+
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setCacheManager(this.redisCacheManager());
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         RedisSessionDao redisSessionDao = this.redisSessionDao();
         sessionManager.setSessionDAO(redisSessionDao);
+        //设置删除无效会话
+        sessionManager.setDeleteInvalidSessions(true);
         //关闭会话更新(因为没有配置会话定时任务,所以直接用最下面的设置过期时间,性能消耗比较大)
         sessionManager.setSessionValidationSchedulerEnabled(false);
         //设置cookie状态为开启(生效cookie)

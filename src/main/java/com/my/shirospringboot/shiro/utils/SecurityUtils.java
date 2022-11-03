@@ -35,7 +35,9 @@ public class SecurityUtils extends org.apache.shiro.SecurityUtils {
     public static ShUsers getShUsers(){
         Subject subject = SecurityUtils.getSubject();
         ShiroUser shiroUser = (ShiroUser)subject.getPrincipal();
-        ShUsers shUsers = (ShUsers)BeanUtils.toBean(shiroUser, ShUsers.class);
+//        ShUsers shUsers = (ShUsers)BeanUtils.toBean(shiroUser, ShUsers.class);
+        ShUsers shUsers = new ShUsers();
+        BeanUtils.copyPropertiesIgnoreNull(shiroUser,shUsers);
         return shUsers;
     }
 

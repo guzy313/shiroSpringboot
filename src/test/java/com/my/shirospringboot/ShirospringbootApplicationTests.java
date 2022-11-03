@@ -74,13 +74,14 @@ class ShirospringbootApplicationTests {
 	void query(){
 //		ShUsers admin = shUsersBridgeService.findUserByLoginName("admin");
 //		System.out.println(admin);
-		ShUsers user = shUsersBridgeService.findUserByLoginName("admin");
-
-
-
-		//构建认证令牌对象
-		ShiroUser shiroUser = (ShiroUser)BeanUtils.toBean(user,ShiroUser.class);
-		System.out.println(shiroUser);
+//		ShUsers user = shUsersBridgeService.findUserByLoginName("admin");
+//
+//
+//
+//		//构建认证令牌对象
+//		ShiroUser shiroUser = new ShiroUser();
+//		BeanUtils.copyPropertiesIgnoreNull(user,shiroUser);
+//		System.out.println(shiroUser);
 
 	}
 
@@ -108,8 +109,8 @@ class ShirospringbootApplicationTests {
 		shiroUser.setId("123");
 		shiroUser.setLoginName("test1");
 
-		ShUsers shUsers = (ShUsers)BeanUtils.toBean(shiroUser, ShUsers.class);
-		System.out.println(shUsers);
+//		ShUsers shUsers = (ShUsers)BeanUtils.toBean(shiroUser, ShUsers.class);
+//		System.out.println(shUsers);
 
 	}
 

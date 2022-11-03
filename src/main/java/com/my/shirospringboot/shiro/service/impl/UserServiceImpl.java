@@ -106,7 +106,9 @@ public class UserServiceImpl implements UserService {
         if(!StringUtils.hasLength(userVo.getId())){
             entryptPassword(userVo);//散列加密密码 用以获取散列之后的密文密码以及salt保存
             userVo.setEnableFlag(SuperConstant.YES);//启用用户
-            ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
+//            ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
+            ShUsers shUsers = new ShUsers();
+            BeanUtils.copyPropertiesIgnoreNull(userVo,shUsers);
             //新增
             int insert = shUsersMapper.insert(shUsers);
             if(insert > 0){
@@ -114,7 +116,8 @@ public class UserServiceImpl implements UserService {
             }
             return false;
         }else{
-            ShUsers shUsers = (ShUsers) BeanUtils.toBean(userVo,ShUsers.class);
+            ShUsers shUsers = new ShUsers();
+            BeanUtils.copyPropertiesIgnoreNull(userVo,shUsers);
             //修改
             int update = shUsersMapper.updateById(shUsers);
             if(update > 0){
@@ -163,7 +166,9 @@ public class UserServiceImpl implements UserService {
         if("admin".equals(userVo.getLoginName())){
             throw new RuntimeException("管理员无法进行删除操作");
         }
-        ShUsers shUsers = (ShUsers)BeanUtils.toBean(userVo, ShUsers.class);
+//        ShUsers shUsers = (ShUsers)BeanUtils.toBean(userVo, ShUsers.class);
+        ShUsers shUsers = new ShUsers();
+        BeanUtils.copyPropertiesIgnoreNull(userVo,shUsers);
         int delete = shUsersMapper.deleteById(shUsers);
         if(delete > 0){
             return true;

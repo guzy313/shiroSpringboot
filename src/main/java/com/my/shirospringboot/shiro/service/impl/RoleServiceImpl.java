@@ -186,7 +186,10 @@ public class RoleServiceImpl implements RoleService {
         Map<String, Object> roleIdMap = new HashMap<>();
         roleIdMap.put("roleId",roleVo.getId());
 
-        ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
+//        ShRoles shRoles = (ShRoles)BeanUtils.toBean(roleVo, ShRoles.class);
+        ShRoles shRoles = new ShRoles();
+        BeanUtils.copyPropertiesIgnoreNull(roleVo,shRoles);
+
         int delete = shRolesMapper.deleteById(shRoles);
         if(delete > 0){
             //删除之前当前角色的权限②

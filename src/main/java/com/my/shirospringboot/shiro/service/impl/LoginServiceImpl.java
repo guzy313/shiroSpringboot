@@ -24,6 +24,7 @@ import java.util.Map;
  * @Description
  */
 @Service
+@Log4j2
 public class LoginServiceImpl implements LoginService {
     private static final Logger log = LoggerFactory.getLogger(LoginServiceImpl.class);
     @Autowired
