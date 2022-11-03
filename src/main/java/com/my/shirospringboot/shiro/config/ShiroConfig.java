@@ -134,7 +134,8 @@ public class ShiroConfig {
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setCacheManager(this.redisCacheManager());
+//        sessionManager.setCacheManager(this.redisCacheManager());
+        //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         RedisSessionDao redisSessionDao = this.redisSessionDao();
         sessionManager.setSessionDAO(redisSessionDao);
