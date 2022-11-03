@@ -13,6 +13,11 @@ spring:
     prefix: classpath:/static/
   mvc:
     static-path-pattern: /static/**
+  redis:
+    port: 6379
+    host: localhost
+    database: 0
+    password: 12345
   #  servlet:
 #    multipart:
 #      #启用文件上传

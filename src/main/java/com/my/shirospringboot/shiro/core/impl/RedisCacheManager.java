@@ -22,7 +22,8 @@ import javax.annotation.Resource;
 
 public class RedisCacheManager implements CacheManager{
 
-    private final Logger logger = LoggerFactory.getLogger(RedisCacheManager.class);
+    //获取日志
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private ShiroRedisProperties shiroRedisProperties;
@@ -37,7 +38,9 @@ public class RedisCacheManager implements CacheManager{
 
     @Override
     public <K, V> Cache<K, V> getCache(String name) throws CacheException {
-        return new RedisCache<K, V>(shiroRedisProperties.getGlobalTimeout(),redissonClient);// 为了简化代码的编写，此处直接new一个Cache
+        return new RedisCache<K, V>(
+                shiroRedisProperties.getGlobalTimeout(),
+                redissonClient);// 为了简化代码的编写，此处直接new一个Cache
     }
 
 }

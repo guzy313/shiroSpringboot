@@ -7,6 +7,9 @@ import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheException;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,16 +23,21 @@ import java.util.concurrent.TimeUnit;
  * @Description
  */
 @Component
-public class RedisCache<K,V> implements Cache<K,V>{
-//    /**
-//     * @Description: 注入redisson客户端类
-//     */
-//    @Resource(name = "redissonClientForShiro")
+public class RedisCache<K,V> implements Cache<K,V>{ //获取日志
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * @Description: 注入redisson客户端类
+     */
+    @Resource(name = "redissonClientForShiro")
     private RedissonClient redissonClient;
+
+    private ShiroRedisProperties shiroRedisProperties;
     /**
      * @Description: 全局超时时间(ms 毫秒)
      */
-    private long globalTimeout;
+    private long globalTimeout = 1000;
+
+    private String cacheName;
 
     public RedisCache() {
         super();
@@ -47,7 +55,9 @@ public class RedisCache<K,V> implements Cache<K,V>{
      */
     @Override
     public V get(K key) throws CacheException {
-        RBucket<String> bucket = redissonClient.getBucket(CacheConstant.GROUP_CAS + String.valueOf(key));
+        this.cacheName = CacheConstant.GROUP_CAS + key;
+        logger.info("从"+this.cacheName+"中get key:" + key);
+        RBucket<String> bucket = redissonClient.getBucket(this.cacheName);
         V v = (V)ShiroRedissonSerialize.deserialize(bucket.get());
         return v;
     }
@@ -57,7 +67,9 @@ public class RedisCache<K,V> implements Cache<K,V>{
      */
     @Override
     public V put(K key, V value) throws CacheException {
-        RBucket<String> bucket = redissonClient.getBucket(CacheConstant.GROUP_CAS + String.valueOf(key));
+        this.cacheName = CacheConstant.GROUP_CAS + key;
+        logger.info("向"+this.cacheName+"中put value:"+value);
+        RBucket<String> bucket = redissonClient.getBucket(this.cacheName);
         bucket.set(ShiroRedissonSerialize.serialize(value), this.globalTimeout, TimeUnit.SECONDS);
         return value;
     }
@@ -67,7 +79,9 @@ public class RedisCache<K,V> implements Cache<K,V>{
      */
     @Override
     public V remove(K key) throws CacheException {
-        RBucket<String> bucket = redissonClient.getBucket(CacheConstant.GROUP_CAS + String.valueOf(key));
+        this.cacheName = CacheConstant.GROUP_CAS + key;
+        logger.info("退出时执行的是remove函数,移除:"+this.cacheName);
+        RBucket<String> bucket = redissonClient.getBucket(this.cacheName);
         V v = (V)ShiroRedissonSerialize.serialize(bucket.get());
         bucket.delete();
         return v;

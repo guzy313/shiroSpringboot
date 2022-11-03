@@ -3,6 +3,7 @@ package com.my.shirospringboot.shiro.config;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.RedisCacheManager;
+import com.my.shirospringboot.shiro.core.impl.RedisCacheManager1;
 import com.my.shirospringboot.shiro.core.impl.RedisSessionDao;
 import com.my.shirospringboot.shiro.core.impl.ShiroDbRealmImpl;
 import com.my.shirospringboot.utils.PropertiesUtils;
@@ -47,7 +48,7 @@ public class ShiroConfig {
 
     /**
      * @Description: 权限(调用redis)缓存(redisson)客户端
-     * @param shiroRedisProperties
+     * @param
      * @return
      */
     @Bean("redissonClientForShiro")
@@ -108,7 +109,16 @@ public class ShiroConfig {
     @Bean(value = "shiroDbRealm")
     public ShiroDbRealm shiroDbRealm(){
         ShiroDbRealm shiroDbRealm = new ShiroDbRealmImpl();
+        //开启缓存管理
         shiroDbRealm.setCachingEnabled(true);
+        //设置缓存管理器
+        shiroDbRealm.setCacheManager(new RedisCacheManager1());
+        //认证缓存开启
+        shiroDbRealm.setAuthenticationCachingEnabled(true);
+        shiroDbRealm.setAuthenticationCacheName("AuthenticationCache");
+        //授权缓存开启
+        shiroDbRealm.setAuthorizationCachingEnabled(true);
+        shiroDbRealm.setAuthorizationCacheName("AuthorizationCaching");
         return new ShiroDbRealmImpl();
     }
 
@@ -125,16 +135,16 @@ public class ShiroConfig {
         return redisSessionDao;
     }
 
-    @Bean
-    public RedisCacheManager redisCacheManager(){
-        return new RedisCacheManager();
-    }
+//    @Bean
+//    public RedisCacheManager redisCacheManager(){
+//        return new RedisCacheManager();
+//    }
 
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-//        sessionManager.setCacheManager(this.redisCacheManager());
+        sessionManager.setCacheManager(new RedisCacheManager1());
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         RedisSessionDao redisSessionDao = this.redisSessionDao();
