@@ -22,6 +22,7 @@ public class BaseInterceptor implements HandlerInterceptor {
         if(authenticated){
             return true;
         }else{
+            System.out.println("======================未登录成功============================================");
             response.sendRedirect("/account/login");
             return false;
         }

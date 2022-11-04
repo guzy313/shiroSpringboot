@@ -35,6 +35,7 @@ public class ShiroRedissonSerialize {
             bos = new ByteArrayOutputStream();
             oos = new ObjectOutputStream(bos);
             oos.writeObject(object);
+            oos.writeObject(null);//解决EOF的关键，加入一个空的对象
             encodeBase64 = EncodesUtils.encodeBase64(bos.toByteArray());
         }catch (IOException e){
             e.printStackTrace();

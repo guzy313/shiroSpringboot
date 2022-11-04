@@ -1,5 +1,8 @@
 package com.my.shirospringboot.shiro.config;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.RedisCacheManager;
@@ -27,6 +30,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.RedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.servlet.Filter;
 import java.io.FileInputStream;
@@ -83,26 +92,40 @@ public class ShiroConfig {
     }
 
 
+
     //创建权限管理器(入口,MAIN！！！！！！)
     @Bean
     public DefaultWebSecurityManager defaultWebSecurityManager(){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         //管理realm
         securityManager.setRealm(this.shiroDbRealm());
+        securityManager.setCacheManager(this.redisCacheManager1());
+        //TODO
         //管理会话
         securityManager.setSessionManager(this.sessionManager());
         return securityManager;
     }
 
 
-    //创建cookie对象
-    @Bean("simpleCookie")
-    public SimpleCookie simpleCookie(){
-        SimpleCookie simpleCookie = new SimpleCookie();
-        //设置shiro的cookie名称(可以随便取名)
-        simpleCookie.setName("ShiroSession");
-        return simpleCookie;
+//    //创建cookie对象
+//    @Bean("simpleCookie")
+//    public SimpleCookie simpleCookie(){
+//        SimpleCookie simpleCookie = new SimpleCookie();
+//        //设置shiro的cookie名称(可以随便取名)
+//        simpleCookie.setName("ShiroSession");
+//        return simpleCookie;
+//    }
+
+    /**
+     * @Description: redis缓存管理器
+     * @return
+     */
+    @Bean
+    public RedisCacheManager1 redisCacheManager1(){
+        return new RedisCacheManager1();
     }
+
+
 
 
     //创建自定义realm
@@ -112,13 +135,13 @@ public class ShiroConfig {
         //开启缓存管理
         shiroDbRealm.setCachingEnabled(true);
         //设置缓存管理器
-        shiroDbRealm.setCacheManager(new RedisCacheManager1());
+        shiroDbRealm.setCacheManager(this.redisCacheManager1());
         //认证缓存开启
         shiroDbRealm.setAuthenticationCachingEnabled(true);
-        shiroDbRealm.setAuthenticationCacheName("AuthenticationCache");
+//        shiroDbRealm.setAuthenticationCacheName("AuthenticationCache");
         //授权缓存开启
         shiroDbRealm.setAuthorizationCachingEnabled(true);
-        shiroDbRealm.setAuthorizationCacheName("AuthorizationCaching");
+//        shiroDbRealm.setAuthorizationCacheName("AuthorizationCaching");
         return new ShiroDbRealmImpl();
     }
 
@@ -144,7 +167,7 @@ public class ShiroConfig {
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setCacheManager(new RedisCacheManager1());
+//        sessionManager.setCacheManager(this.redisCacheManager1());
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         RedisSessionDao redisSessionDao = this.redisSessionDao();
@@ -156,7 +179,7 @@ public class ShiroConfig {
         //设置cookie状态为开启(生效cookie)
         sessionManager.setSessionIdCookieEnabled(true);
         //指定cookie创建方式(创建方式是 当前类中simpleCookie())
-        sessionManager.setSessionIdCookie(this.simpleCookie());
+//        sessionManager.setSessionIdCookie(this.simpleCookie());
         //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
         //此处设置为1小时过期
         sessionManager.setGlobalSessionTimeout(60 * 60 * 1000);

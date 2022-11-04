@@ -76,6 +76,8 @@ public class LoginAction {
         }
         System.out.println("是否认证:"+SecurityUtils.getSubject().isAuthenticated());
         modelAndView.setViewName("redirect:/menus/system");
+        long timeout = SecurityUtils.getSubject().getSession().getTimeout();
+        System.out.println("会话失效时间:"+timeout);
         return modelAndView;
     }
 

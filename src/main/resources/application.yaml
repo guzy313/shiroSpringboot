@@ -18,6 +18,11 @@ spring:
     host: localhost
     database: 0
     password: 12345
+    lettuce:
+      pool:
+        max-active: 20
+        max-wait: -1
+        min-idle: 0
   #  servlet:
 #    multipart:
 #      #启用文件上传
