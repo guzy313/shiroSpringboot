@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
-import com.my.shirospringboot.shiro.core.impl.RedisCacheManager;
-import com.my.shirospringboot.shiro.core.impl.RedisCacheManager1;
-import com.my.shirospringboot.shiro.core.impl.RedisSessionDao;
-import com.my.shirospringboot.shiro.core.impl.ShiroDbRealmImpl;
+import com.my.shirospringboot.shiro.core.impl.*;
 import com.my.shirospringboot.utils.PropertiesUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -18,6 +15,8 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
+import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisSessionDAO;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
@@ -97,33 +96,33 @@ public class ShiroConfig {
     @Bean
     public DefaultWebSecurityManager defaultWebSecurityManager(){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        //管理realm
-        securityManager.setRealm(this.shiroDbRealm());
-        securityManager.setCacheManager(this.redisCacheManager1());
-        //TODO
         //管理会话
         securityManager.setSessionManager(this.sessionManager());
+        //管理realm
+        securityManager.setRealm(this.shiroDbRealm());
+//        securityManager.setCacheManager(this.redisCacheManager1());
+        //TODO
         return securityManager;
     }
 
 
-//    //创建cookie对象
-//    @Bean("simpleCookie")
-//    public SimpleCookie simpleCookie(){
-//        SimpleCookie simpleCookie = new SimpleCookie();
-//        //设置shiro的cookie名称(可以随便取名)
-//        simpleCookie.setName("ShiroSession");
-//        return simpleCookie;
-//    }
-
-    /**
-     * @Description: redis缓存管理器
-     * @return
-     */
-    @Bean
-    public RedisCacheManager1 redisCacheManager1(){
-        return new RedisCacheManager1();
+    //创建cookie对象
+    @Bean("simpleCookie")
+    public SimpleCookie simpleCookie(){
+        SimpleCookie simpleCookie = new SimpleCookie();
+        //设置shiro的cookie名称(可以随便取名)
+        simpleCookie.setName("ShiroSession");
+        return simpleCookie;
     }
+
+//    /**
+//     * @Description: redis缓存管理器
+//     * @return
+//     */
+//    @Bean
+//    public RedisCacheManager1 redisCacheManager1(){
+//        return new RedisCacheManager1();
+//    }
 
 
 
@@ -132,16 +131,16 @@ public class ShiroConfig {
     @Bean(value = "shiroDbRealm")
     public ShiroDbRealm shiroDbRealm(){
         ShiroDbRealm shiroDbRealm = new ShiroDbRealmImpl();
+        //设置缓存管理器
+//        shiroDbRealm.setCacheManager(new RedisCacheManager2());
         //开启缓存管理
         shiroDbRealm.setCachingEnabled(true);
-        //设置缓存管理器
-        shiroDbRealm.setCacheManager(this.redisCacheManager1());
         //认证缓存开启
         shiroDbRealm.setAuthenticationCachingEnabled(true);
-//        shiroDbRealm.setAuthenticationCacheName("AuthenticationCache");
+        shiroDbRealm.setAuthenticationCacheName("authenticationCache");
         //授权缓存开启
         shiroDbRealm.setAuthorizationCachingEnabled(true);
-//        shiroDbRealm.setAuthorizationCacheName("AuthorizationCaching");
+        shiroDbRealm.setAuthorizationCacheName("authorizationCaching");
         return new ShiroDbRealmImpl();
     }
 
@@ -153,25 +152,30 @@ public class ShiroConfig {
     @Bean
     public RedisSessionDao redisSessionDao(){
         RedisSessionDao redisSessionDao = new RedisSessionDao();
-        redisSessionDao.setGlobalTimeout(shiroRedisProperties.getGlobalTimeout());
         //构造器中已经从配置文件中读取 设置了 全局超时时间
         return redisSessionDao;
     }
 
-//    @Bean
-//    public RedisCacheManager redisCacheManager(){
-//        return new RedisCacheManager();
-//    }
+    // TODO
+    @Bean
+    public RedisCacheManager redisCacheManager(){
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        return redisCacheManager;
+    }
 
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
 //        sessionManager.setCacheManager(this.redisCacheManager1());
+//        sessionManager.setCacheManager(new RedisCacheManager2());
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
-        RedisSessionDao redisSessionDao = this.redisSessionDao();
-        sessionManager.setSessionDAO(redisSessionDao);
+//        RedisSessionDao redisSessionDao = this.redisSessionDao();
+//        sessionManager.setSessionDAO(redisSessionDao);
+        sessionManager.setCacheManager(this.redisCacheManager());
+        sessionManager.setSessionDAO(new RedisSessionDAO());
+        
         //设置删除无效会话
         sessionManager.setDeleteInvalidSessions(true);
         //关闭会话更新(因为没有配置会话定时任务,所以直接用最下面的设置过期时间,性能消耗比较大)
