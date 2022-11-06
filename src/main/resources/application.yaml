@@ -75,3 +75,9 @@ my:
         timeout: 6000
         global-timeout: 25200000
         password: 12345
+crazyredis:
+  nodes:
+  host: 127.0.0.1:6379
+  timeout: 1800
+  password: 12345
+

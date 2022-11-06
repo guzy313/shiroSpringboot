@@ -3,10 +3,13 @@ package com.my.shirospringboot.shiro.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
+import com.my.shirospringboot.shiro.core.cache.RedisCache;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.*;
 import com.my.shirospringboot.utils.PropertiesUtils;
+import com.my.shirospringboot.utils.StringUtils;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -16,14 +19,18 @@ import org.apache.shiro.web.servlet.SimpleCookie;
 
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.crazycake.shiro.RedisCacheManager;
+import org.crazycake.shiro.RedisClusterManager;
+import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -53,6 +60,19 @@ public class ShiroConfig {
 
     @Autowired
     private ShiroRedisProperties shiroRedisProperties;
+
+    @Value("crazyredis.nodes")
+    private String nodes;
+
+    @Value("crazyredis.host")
+    private String host;
+
+    @Value("crazyredis.timeout")
+    private String timeout;
+
+    @Value("crazyredis.password")
+    private String redisPassword;
+
 
     /**
      * @Description: 权限(调用redis)缓存(redisson)客户端
@@ -90,6 +110,51 @@ public class ShiroConfig {
         return redissonClient;
     }
 
+
+
+    ///////////////////以下为crazy reids集成//////////////////////////
+    /**
+     * redis集群管理器
+     *
+     * @return redisClusterManager
+     */
+    @Bean
+    public RedisClusterManager redisClusterManager() {
+        RedisClusterManager redisClusterManager = new RedisClusterManager();
+
+        return redisClusterManager;
+    }
+
+    /**
+     * redis管理器
+     *
+     * @return redisManager
+     */
+    @Bean
+    public RedisManager redisManager() {
+        RedisManager redisManager = new RedisManager();
+        redisManager.setPassword(this.redisPassword);
+        return redisManager;
+    }
+
+
+    /**
+     * redis缓存管理器
+     *
+     * @param redisClusterManager redis集群管理器
+     * @param redisManager        redis管理器
+     * @return cacheManager
+     */
+    @Bean
+    public RedisCacheManager redisCacheManager(RedisClusterManager redisClusterManager, RedisManager redisManager) {
+        RedisCacheManager redisCacheManager = new RedisCacheManager();
+        redisCacheManager.setRedisManager(StringUtils.isNotEmpty(this.nodes) ? redisClusterManager : redisManager);
+        // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段
+        redisCacheManager.setPrincipalIdFieldName("id");
+//        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
+
+        return redisCacheManager;
+    }
 
 
     //创建权限管理器(入口,MAIN！！！！！！)
@@ -145,36 +210,41 @@ public class ShiroConfig {
     }
 
     /**
-     * @Description: 自定义会话dao (写入redis缓存,解决分布式服务会话问题)
-     * @param
-     * @return
+     * RedisSessionDAO shiro sessionDao层的实现 通过redis
+     * SessionDAO的作用是为Session提供CRUD并进行持久化的一个shiro组件
+     * MemorySessionDAO 直接在内存中进行会话维护
+     * EnterpriseCacheSessionDAO  提供了缓存功能的会话维护，默认情况下使用MapCache实现，内部使用ConcurrentHashMap保存缓存的会话。
      */
     @Bean
-    public RedisSessionDao redisSessionDao(){
-        RedisSessionDao redisSessionDao = new RedisSessionDao();
-        //构造器中已经从配置文件中读取 设置了 全局超时时间
-        return redisSessionDao;
+    public RedisSessionDAO redisSessionDAO() {
+        RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
+        redisSessionDAO.setRedisManager(this.redisManager());
+        redisSessionDAO.setExpire(1800);
+        return redisSessionDAO;
     }
 
     // TODO
-    @Bean
-    public RedisCacheManager redisCacheManager(){
-        RedisCacheManager redisCacheManager = new RedisCacheManager();
-        return redisCacheManager;
-    }
+//    @Bean
+//    public RedisCacheManager redisCacheManager(){
+//        RedisCacheManager redisCacheManager = new RedisCacheManager();
+//        redisCacheManager.setExpire(Integer.parseInt(String.valueOf(shiroRedisProperties.getGlobalTimeout())));
+//        redisCacheManager.setKeyPrefix(CacheConstant.GROUP_CAS);
+//        return redisCacheManager;
+//    }
 
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
-        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+//        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        DefaultWebSessionManager sessionManager = new MySessionManager();
 //        sessionManager.setCacheManager(this.redisCacheManager1());
 //        sessionManager.setCacheManager(new RedisCacheManager2());
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
 //        RedisSessionDao redisSessionDao = this.redisSessionDao();
 //        sessionManager.setSessionDAO(redisSessionDao);
-        sessionManager.setCacheManager(this.redisCacheManager());
-        sessionManager.setSessionDAO(new RedisSessionDAO());
+//        sessionManager.setCacheManager(this.redisCacheManager());
+//        sessionManager.setSessionDAO(new RedisSessionDAO());
         
         //设置删除无效会话
         sessionManager.setDeleteInvalidSessions(true);
