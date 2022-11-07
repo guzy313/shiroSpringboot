@@ -1,4 +1,4 @@
-package com.my.shirospringboot.shiro.core.cache;
+package com.my.shirospringboot.utils;
 
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.codec.CodecSupport;

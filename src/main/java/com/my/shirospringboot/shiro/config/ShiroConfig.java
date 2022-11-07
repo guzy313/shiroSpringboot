@@ -1,17 +1,10 @@
 package com.my.shirospringboot.shiro.config;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
-import com.my.shirospringboot.shiro.core.cache.RedisCache;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.*;
 import com.my.shirospringboot.utils.PropertiesUtils;
-import com.my.shirospringboot.utils.StringUtils;
 import lombok.extern.log4j.Log4j2;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -25,26 +18,14 @@ import org.crazycake.shiro.RedisSessionDAO;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
-import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.servlet.Filter;
-import java.io.FileInputStream;
 import java.util.*;
 
 /**
@@ -133,29 +114,9 @@ public class ShiroConfig {
     @Bean
     public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
-        System.out.println("========================================================================this.redisPassword:"+this.redisPassword);
         redisManager.setPassword(this.redisPassword);
         return redisManager;
     }
-
-
-//    /**
-//     * redis缓存管理器
-//     *
-//     * @param redisClusterManager redis集群管理器
-//     * @param redisManager        redis管理器
-//     * @return cacheManager
-//     */
-//    @Bean
-//    public RedisCacheManager redisCacheManager(RedisClusterManager redisClusterManager, RedisManager redisManager) {
-//        RedisCacheManager redisCacheManager = new RedisCacheManager();
-//        redisCacheManager.setRedisManager(StringUtils.isNotEmpty(this.nodes) ? redisClusterManager : redisManager);
-//        // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段
-//        redisCacheManager.setPrincipalIdFieldName("id");
-////        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
-//
-//        return redisCacheManager;
-//    }
 
     /**
      * redis缓存管理器
@@ -168,9 +129,10 @@ public class ShiroConfig {
     public RedisCacheManager redisCacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
         redisCacheManager.setRedisManager(this.redisManager());
-        // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段
+        // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段(id)
         redisCacheManager.setPrincipalIdFieldName("id");
-//        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
+        //设置缓存的有效时间
+        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
 
         return redisCacheManager;
     }
@@ -184,11 +146,8 @@ public class ShiroConfig {
         securityManager.setSessionManager(this.sessionManager());
         //管理realm
         securityManager.setRealm(this.shiroDbRealm());
-//        securityManager.setCacheManager(this.redisCacheManager1());
-        //TODO
         return securityManager;
     }
-
 
     //创建cookie对象
     @Bean("simpleCookie")
@@ -199,24 +158,11 @@ public class ShiroConfig {
         return simpleCookie;
     }
 
-//    /**
-//     * @Description: redis缓存管理器
-//     * @return
-//     */
-//    @Bean
-//    public RedisCacheManager1 redisCacheManager1(){
-//        return new RedisCacheManager1();
-//    }
-
-
-
-
     //创建自定义realm
     @Bean(value = "shiroDbRealm")
     public ShiroDbRealm shiroDbRealm(){
         ShiroDbRealm shiroDbRealm = new ShiroDbRealmImpl();
         //设置缓存管理器
-//        shiroDbRealm.setCacheManager(new RedisCacheManager2());
         shiroDbRealm.setCacheManager(this.redisCacheManager());
         //开启缓存管理
         shiroDbRealm.setCachingEnabled(true);
@@ -243,28 +189,13 @@ public class ShiroConfig {
         return redisSessionDAO;
     }
 
-    // TODO
-//    @Bean
-//    public RedisCacheManager redisCacheManager(){
-//        RedisCacheManager redisCacheManager = new RedisCacheManager();
-//        redisCacheManager.setExpire(Integer.parseInt(String.valueOf(shiroRedisProperties.getGlobalTimeout())));
-//        redisCacheManager.setKeyPrefix(CacheConstant.GROUP_CAS);
-//        return redisCacheManager;
-//    }
 
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
-//        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         DefaultWebSessionManager sessionManager = new MySessionManager();
-//        sessionManager.setCacheManager(this.redisCacheManager1());
-//        sessionManager.setCacheManager(new RedisCacheManager2());
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
-//        RedisSessionDao redisSessionDao = this.redisSessionDao();
-//        sessionManager.setSessionDAO(redisSessionDao);
-//        sessionManager.setCacheManager(this.redisCacheManager());
-//        sessionManager.setSessionDAO(new RedisSessionDAO());
         sessionManager.setSessionDAO(this.redisSessionDAO());
         
         //设置删除无效会话
@@ -274,7 +205,7 @@ public class ShiroConfig {
         //设置cookie状态为开启(生效cookie)
         sessionManager.setSessionIdCookieEnabled(true);
         //指定cookie创建方式(创建方式是 当前类中simpleCookie())
-//        sessionManager.setSessionIdCookie(this.simpleCookie());
+        sessionManager.setSessionIdCookie(this.simpleCookie());
         //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
         //此处设置为1小时过期
         sessionManager.setGlobalSessionTimeout(60 * 60 * 1000);

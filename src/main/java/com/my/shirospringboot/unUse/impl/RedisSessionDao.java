@@ -1,4 +1,4 @@
-package com.my.shirospringboot.shiro.core.impl;
+package com.my.shirospringboot.unUse.impl;
 
 import com.my.shirospringboot.shiro.config.ShiroRedisProperties;
 import com.my.shirospringboot.shiro.constant.CacheConstant;
@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Gzy
  * @version 1.0
- * @Description: 自定义统一sessionDao 实现(redis会话管理Dao)
+ * @Description: 自定义统一sessionDao 实现(redis会话管理Dao)  --未使用
  */
 public class RedisSessionDao extends EnterpriseCacheSessionDAO {
     /**
