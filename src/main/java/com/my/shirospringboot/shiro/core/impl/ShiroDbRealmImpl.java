@@ -7,6 +7,7 @@ import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
 import com.my.shirospringboot.shiro.core.base.ShiroUser;
 import com.my.shirospringboot.shiro.core.base.SimpleToken;
+import com.my.shirospringboot.shiro.core.base.TryLimitHashedCredentialsMatcher;
 import com.my.shirospringboot.shiro.core.bridge.impl.ShUsersBridgeServiceImpl;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.utils.BeanUtils;
@@ -19,9 +20,11 @@ import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.util.ByteSource;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -35,6 +38,11 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
 
     @Autowired
     private SimpleCacheServiceImpl simpleCacheService;
+
+
+    //注入redisson客户端类
+    @Resource(name = "redissonClientForShiro")
+    private RedissonClient redissonClient;
 
 
     /**
@@ -107,11 +115,11 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
 
     @Override
     public void initCredentialsMatcher() {
-        HashedCredentialsMatcher credentialsMatcher = new HashedCredentialsMatcher();
+        HashedCredentialsMatcher credentialsMatcher = new TryLimitHashedCredentialsMatcher(redissonClient);
         //设置加密算法 散列算法1
         credentialsMatcher.setHashAlgorithmName(SuperConstant.SHA1);
         //设置加密次数
-        credentialsMatcher.setHashIterations(SuperConstant.HashIterations);
+        credentialsMatcher.setHashIterations(SuperConstant.HASH_ITERATIONS);
         //设置当前realm的密码匹配器 使密码匹配器生效
         this.setCredentialsMatcher(credentialsMatcher);
     }

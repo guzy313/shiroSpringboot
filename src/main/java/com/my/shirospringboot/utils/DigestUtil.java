@@ -21,7 +21,7 @@ public class DigestUtil {
      * @return 加密之后的字符串
      */
     public static String sha1(String input,String salt){
-        return new SimpleHash(SuperConstant.SHA1,input,salt,SuperConstant.HashIterations).toString();
+        return new SimpleHash(SuperConstant.SHA1,input,salt,SuperConstant.HASH_ITERATIONS).toString();
     }
 
     /**
