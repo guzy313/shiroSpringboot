@@ -42,17 +42,20 @@ public class ShiroConfig {
     @Autowired
     private ShiroRedisProperties shiroRedisProperties;
 
-    @Value("{crazyredis.nodes}")
+    @Value("${crazyredis.nodes}")
     private String nodes;
 
-    @Value("{crazyredis.host}")
+    @Value("${crazyredis.host}")
     private String host;
 
-    @Value("{crazyredis.timeout}")
+    @Value("${crazyredis.timeout}")
     private String timeout;
 
     @Value("${crazyredis.password}")
     private String redisPassword;
+
+    @Value("${crazyredis.clusteropen}")
+    private Boolean clusterOpen;
 
 
     /**
@@ -102,7 +105,8 @@ public class ShiroConfig {
     @Bean
     public RedisClusterManager redisClusterManager() {
         RedisClusterManager redisClusterManager = new RedisClusterManager();
-
+        redisClusterManager.setHost(this.nodes);
+        redisClusterManager.setPassword(this.redisPassword);
         return redisClusterManager;
     }
 
@@ -128,7 +132,8 @@ public class ShiroConfig {
     @Bean
     public RedisCacheManager redisCacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
-        redisCacheManager.setRedisManager(this.redisManager());
+        //指定redis管理器(集群或者单机模式)
+        redisCacheManager.setRedisManager(this.clusterOpen ? this.redisClusterManager() : this.redisManager());
         // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段(id)
         redisCacheManager.setPrincipalIdFieldName("id");
         //设置缓存的有效时间

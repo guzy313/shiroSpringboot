@@ -1,4 +1,4 @@
-package com.my.shirospringboot.shiro.config;
+package com.my.shirospringboot.unUse.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
