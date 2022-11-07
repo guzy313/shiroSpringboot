@@ -61,16 +61,16 @@ public class ShiroConfig {
     @Autowired
     private ShiroRedisProperties shiroRedisProperties;
 
-    @Value("crazyredis.nodes")
+    @Value("{crazyredis.nodes}")
     private String nodes;
 
-    @Value("crazyredis.host")
+    @Value("{crazyredis.host}")
     private String host;
 
-    @Value("crazyredis.timeout")
+    @Value("{crazyredis.timeout}")
     private String timeout;
 
-    @Value("crazyredis.password")
+    @Value("${crazyredis.password}")
     private String redisPassword;
 
 
@@ -133,10 +133,29 @@ public class ShiroConfig {
     @Bean
     public RedisManager redisManager() {
         RedisManager redisManager = new RedisManager();
+        System.out.println("========================================================================this.redisPassword:"+this.redisPassword);
         redisManager.setPassword(this.redisPassword);
         return redisManager;
     }
 
+
+//    /**
+//     * redis缓存管理器
+//     *
+//     * @param redisClusterManager redis集群管理器
+//     * @param redisManager        redis管理器
+//     * @return cacheManager
+//     */
+//    @Bean
+//    public RedisCacheManager redisCacheManager(RedisClusterManager redisClusterManager, RedisManager redisManager) {
+//        RedisCacheManager redisCacheManager = new RedisCacheManager();
+//        redisCacheManager.setRedisManager(StringUtils.isNotEmpty(this.nodes) ? redisClusterManager : redisManager);
+//        // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段
+//        redisCacheManager.setPrincipalIdFieldName("id");
+////        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
+//
+//        return redisCacheManager;
+//    }
 
     /**
      * redis缓存管理器
@@ -146,9 +165,9 @@ public class ShiroConfig {
      * @return cacheManager
      */
     @Bean
-    public RedisCacheManager redisCacheManager(RedisClusterManager redisClusterManager, RedisManager redisManager) {
+    public RedisCacheManager redisCacheManager() {
         RedisCacheManager redisCacheManager = new RedisCacheManager();
-        redisCacheManager.setRedisManager(StringUtils.isNotEmpty(this.nodes) ? redisClusterManager : redisManager);
+        redisCacheManager.setRedisManager(this.redisManager());
         // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段
         redisCacheManager.setPrincipalIdFieldName("id");
 //        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
@@ -198,6 +217,7 @@ public class ShiroConfig {
         ShiroDbRealm shiroDbRealm = new ShiroDbRealmImpl();
         //设置缓存管理器
 //        shiroDbRealm.setCacheManager(new RedisCacheManager2());
+        shiroDbRealm.setCacheManager(this.redisCacheManager());
         //开启缓存管理
         shiroDbRealm.setCachingEnabled(true);
         //认证缓存开启
@@ -245,6 +265,7 @@ public class ShiroConfig {
 //        sessionManager.setSessionDAO(redisSessionDao);
 //        sessionManager.setCacheManager(this.redisCacheManager());
 //        sessionManager.setSessionDAO(new RedisSessionDAO());
+        sessionManager.setSessionDAO(this.redisSessionDAO());
         
         //设置删除无效会话
         sessionManager.setDeleteInvalidSessions(true);
