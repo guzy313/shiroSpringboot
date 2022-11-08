@@ -5,6 +5,7 @@ import com.my.shirospringboot.shiro.constant.SuperConstant;
 import com.my.shirospringboot.utils.ShiroRedissonSerialize;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.ExcessiveAttemptsException;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
@@ -20,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Gzy
  * @version 1.0
- * @Description: 重写密码比较器,用来限制登录的重试次数
+ * @Description: 重写密码比较器,用来限制登录的重试次数-未考虑不存在用户是否要存入缓存(防止恶意不存在账号输错挤占redis空间)
  */
 @Component
 public class TryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
@@ -61,7 +62,7 @@ public class TryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
             if(count >= CacheConstant.USER_ALLOW_FAIL_COUNT){
                 //登录尝试超过指定次数情况
                 log.info("用户登录尝试次数过多,暂时无法登录");
-                return false;
+                throw new ExcessiveAttemptsException("用户登录尝试次数过多,暂时无法登录");
             }else{
                 //登录尝试未超过指定次数情况(计数)
                 loginSuccessOrNot = super.doCredentialsMatch(token, info);
@@ -75,6 +76,7 @@ public class TryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
             bucket.delete();
         }else{
             log.info("登录失败,当前尝试次数" + count);
+            throw new ExcessiveAttemptsException("用户名或密码错误");
         }
         return loginSuccessOrNot;
     }
