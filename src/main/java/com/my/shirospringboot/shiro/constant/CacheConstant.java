@@ -28,4 +28,10 @@ public class CacheConstant extends SuperConstant{
     //通过登录名查询的用户 key
     public final static String FIND_USER_BY_LOGINNAME = GROUP_CAS + "findUserByLoginName:";
 
+    //登录用户session前缀
+    public final static String SESSION_PREFIX = GROUP_CAS + "session:";
+
+    //redis 在线(已登录未登出)用户sessionID队列缓存key 前缀
+    public final static String ACTIVE_SESSIONID_QUEUE_PREFIX = SESSION_PREFIX + "active:queue:";
+
 }

@@ -112,7 +112,9 @@ public class ShiroDbRealmImpl extends ShiroDbRealm {
         simpleCacheService.removeCache(permissionsKey);
     }
 
-
+    /**
+     * @Description: 密码比较器
+     */
     @Override
     public void initCredentialsMatcher() {
         HashedCredentialsMatcher credentialsMatcher = new TryLimitHashedCredentialsMatcher(redissonClient);

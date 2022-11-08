@@ -52,4 +52,9 @@ public class SuperConstant {
      */
     public static final Integer USER_LOGIN_FAIL_TIME = 1800000;
 
+    /**
+     * 允许账号 并发会话 个数限制
+     */
+    public static final Integer ACTIVE_NUM_LIMIT = 3;
+
 }

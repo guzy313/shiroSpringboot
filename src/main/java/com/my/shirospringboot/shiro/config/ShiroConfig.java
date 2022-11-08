@@ -1,6 +1,8 @@
 package com.my.shirospringboot.shiro.config;
 
+import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
+import com.my.shirospringboot.shiro.core.filter.KickedOutAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
 import com.my.shirospringboot.shiro.core.impl.*;
 import com.my.shirospringboot.utils.PropertiesUtils;
@@ -191,14 +193,21 @@ public class ShiroConfig {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(this.redisManager());
         redisSessionDAO.setExpire(1800);
+        //设置会话缓存key的前缀
+        redisSessionDAO.setKeyPrefix(CacheConstant.SESSION_PREFIX);
         return redisSessionDAO;
+    }
+
+    @Bean
+    public MySessionManager redisSessionManager(){
+        return new MySessionManager();
     }
 
 
     //创建会话管理器
     @Bean
     public DefaultWebSessionManager sessionManager(){
-        DefaultWebSessionManager sessionManager = new MySessionManager();
+        DefaultWebSessionManager sessionManager = this.redisSessionManager();
         //TODO
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         sessionManager.setSessionDAO(this.redisSessionDAO());
@@ -269,6 +278,8 @@ public class ShiroConfig {
     private Map<String, Filter> customsFilters(){
         Map<String, Filter> filtersMap = new HashMap<>();
         filtersMap.put("roles-or",new RolesOrAuthorizationFilter());
+        filtersMap.put("kickout",new KickedOutAuthorizationFilter(this.redisSessionDAO(),
+                this.redisSessionManager(),this.redissonClient()));
         return filtersMap;
     }
 
