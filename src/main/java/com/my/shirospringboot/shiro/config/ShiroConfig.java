@@ -51,7 +51,7 @@ public class ShiroConfig {
     private String host;
 
     @Value("${crazyredis.timeout}")
-    private String timeout;
+    private int timeout;
 
     @Value("${crazyredis.password}")
     private String redisPassword;
@@ -139,7 +139,7 @@ public class ShiroConfig {
         // 针对不同的用户缓存，由于principal是ShiroUser，所以需是里面的字段(id)
         redisCacheManager.setPrincipalIdFieldName("id");
         //设置缓存的有效时间
-        redisCacheManager.setExpire(Integer.parseInt(this.timeout));
+        redisCacheManager.setExpire(this.timeout);
 
         return redisCacheManager;
     }
@@ -192,7 +192,7 @@ public class ShiroConfig {
     public RedisSessionDAO redisSessionDAO() {
         RedisSessionDAO redisSessionDAO = new RedisSessionDAO();
         redisSessionDAO.setRedisManager(this.redisManager());
-        redisSessionDAO.setExpire(1800);
+        redisSessionDAO.setExpire(this.timeout);
         //设置会话缓存key的前缀
         redisSessionDAO.setKeyPrefix(CacheConstant.SESSION_PREFIX);
         return redisSessionDAO;
@@ -208,7 +208,7 @@ public class ShiroConfig {
     @Bean
     public DefaultWebSessionManager sessionManager(){
         DefaultWebSessionManager sessionManager = this.redisSessionManager();
-        //TODO
+
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         sessionManager.setSessionDAO(this.redisSessionDAO());
         
@@ -221,8 +221,10 @@ public class ShiroConfig {
         //指定cookie创建方式(创建方式是 当前类中simpleCookie())
         sessionManager.setSessionIdCookie(this.simpleCookie());
         //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
-        //此处设置为1小时过期
-        sessionManager.setGlobalSessionTimeout(60 * 60 * 1000);
+        //此处设置为半小时过期
+//        sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
+        //测试60秒过期-待删除
+        sessionManager.setGlobalSessionTimeout(60 * 1000);
         return sessionManager;
     }
 
@@ -279,7 +281,10 @@ public class ShiroConfig {
         Map<String, Filter> filtersMap = new HashMap<>();
         filtersMap.put("roles-or",new RolesOrAuthorizationFilter());
         filtersMap.put("kickout",new KickedOutAuthorizationFilter(this.redisSessionDAO(),
-                this.redisSessionManager(),this.redissonClient()));
+                this.redisSessionManager(),
+                this.redissonClient(),
+                this.timeout
+                ));
         return filtersMap;
     }
 

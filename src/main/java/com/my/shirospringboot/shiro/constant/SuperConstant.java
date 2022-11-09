@@ -55,6 +55,6 @@ public class SuperConstant {
     /**
      * 允许账号 并发会话 个数限制
      */
-    public static final Integer ACTIVE_NUM_LIMIT = 3;
+    public static final Integer ACTIVE_NUM_LIMIT = 1;
 
 }

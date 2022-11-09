@@ -76,9 +76,13 @@ my:
         global-timeout: 25200000
         password: 12345
 crazyredis:
+#集群配置
   nodes: 127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381,127.0.0.1:6382,127.0.0.1:6383,127.0.0.1:6384,127.0.0.1:6385
+#集群开关
+  clusteropen: false
+#单节点配置
   host: 127.0.0.1:6379
+#会话过期时间,redis缓存的过期时间,redis并发会话缓存队列的过期时间
   timeout: 1800
   password: 12345
-  clusteropen: false
 
