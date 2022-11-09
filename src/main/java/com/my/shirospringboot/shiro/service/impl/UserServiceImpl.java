@@ -13,11 +13,14 @@ import com.my.shirospringboot.utils.BeanUtils;
 import com.my.shirospringboot.utils.DigestUtil;
 import com.my.shirospringboot.utils.PageUtils;
 import com.my.shirospringboot.utils.StringUtils;
+import org.redisson.api.RQueue;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -33,6 +36,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ShUserRoleMapper shUserRoleMapper;
 
+    //注入redisson客户端类
+    @Resource(name = "redissonClientForShiro")
+    private RedissonClient redissonClient;
 
     @Override
     public Boolean saveNewPassword(String oldPassword,String newPassword) throws Exception {
@@ -189,5 +195,11 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public Boolean deleteUserRedisQueue(String key,String sessionId) {
+        RQueue<Object> queue = redissonClient.getQueue(key);
+        return queue.remove(sessionId);
     }
 }

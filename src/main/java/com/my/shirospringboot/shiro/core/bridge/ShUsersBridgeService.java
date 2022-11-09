@@ -90,5 +90,4 @@ public interface ShUsersBridgeService {
      * @param shiroUser
      */
     void loadUserAuthorityToCache(ShiroUser shiroUser);
-
 }

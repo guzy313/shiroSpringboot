@@ -1,14 +1,16 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.service.impl.LoginServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
+import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.shiro.vo.LoginVo;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.annotation.*;
 import org.apache.shiro.subject.Subject;
+import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +37,6 @@ public class LoginAction {
     private LoginServiceImpl loginService;
     @Autowired
     private UserServiceImpl userService;
-
 
 
 
@@ -90,7 +92,12 @@ public class LoginAction {
         ModelAndView modelAndView = new ModelAndView("login");
         Subject subject = SecurityUtils.getSubject();
         if(subject != null){
+            String queueKey = CacheConstant.ACTIVE_SESSIONID_QUEUE_PREFIX
+                    + SecurityUtils.getShiroUser().getLoginName();
+            //从redis缓存的当前用户同时在线队列中删除当前用户的sessionID
+            String sessionId = SecurityUtils.getShiroSessionId();
             subject.logout();
+            userService.deleteUserRedisQueue(queueKey,sessionId);
             modelAndView.addObject("message","登出成功");
         }
         return modelAndView;

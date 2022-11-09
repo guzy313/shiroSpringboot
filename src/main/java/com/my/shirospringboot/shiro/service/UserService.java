@@ -75,6 +75,11 @@ public interface UserService {
      */
     Boolean checkLoginName(UserVo userVo) throws Exception;
 
-
+    /**
+     * @Description: 删除当前登录用户会话在redis队列中的sessionID
+     * @param key
+     * @return
+     */
+    Boolean deleteUserRedisQueue(String key,String sessionId);
 
 }

@@ -16,9 +16,12 @@ import com.my.shirospringboot.utils.ObjectUtils;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.cache.Cache;
+import org.redisson.api.RQueue;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +40,7 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
     //缓存
     @Autowired
     private SimpleCacheServiceImpl simpleCacheService;
+    //缓存
 
 
     @Override
@@ -206,4 +210,6 @@ public class ShUsersBridgeServiceImpl implements ShUsersBridgeService {
         List<String> permissionLabels =
                 this.findPermissionLabelsByUserId(permissionLabelKey, shiroUser.getId());
     }
+
+
 }
