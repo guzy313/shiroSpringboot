@@ -1,5 +1,8 @@
 package com.my.shirospringboot.shiro.core.impl;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.my.shirospringboot.shiro.config.JwtProperties;
 import com.my.shirospringboot.utils.EncodesUtils;
 import io.jsonwebtoken.Claims;
@@ -51,7 +54,7 @@ public class JwtTokenManager {
                 .setId(sessionId)//jti-构建唯一标识，此时使用shiro生成的唯一ID做标识
                 .setIssuedAt(new Date())//构建签发时间
                 .setIssuer(iss)//颁发者
-                .signWith(SignatureAlgorithm.HS512,base64EncodeSecretKey);//提供算法以及秘钥
+                .signWith(SignatureAlgorithm.HS256,base64EncodeSecretKey);//提供算法以及秘钥
 
         if(ttlMillis > 0){
             //如果剩余过期时间大于0
@@ -63,7 +66,11 @@ public class JwtTokenManager {
         return compact;
     }
 
-    //解析令牌
+    /**
+     * @Descriptipon: 解析令牌
+     * @param jwtToken
+     * @return
+     */
     public Claims decodeToken(String jwtToken){
         //获取加密签名-进行base64编码
         String base64EncodeSecretKey =
@@ -76,7 +83,23 @@ public class JwtTokenManager {
         return claims;
     }
 
-    //校验令牌
-    //TODO
+    /**
+     * @Description: 校验令牌:1、头部信息和荷载信息是否被篡改 2、校验令牌是否过期
+     * @param jwtToken 用户传过来的token
+     * @return
+     */
+    public boolean isVerifyToken(String jwtToken){
+        //获取加密签名
+        String base64EncodeSecretKey =
+                EncodesUtils.encodeBase64(jwtProperties.getBase64EncodeSecretKey().getBytes());
+        //指定加密算法(HMAC256 对应HS256)
+        Algorithm algorithm = Algorithm.
+                HMAC256(jwtProperties.getBase64EncodeSecretKey().getBytes());
+        //带着签名构建校验对象
+        JWTVerifier jwtVerifier = JWT.require(algorithm).build();
+        //校验--如果校验失败会抛出异常
+        jwtVerifier.verify(jwtToken);
+        return true;
+    }
 
 }

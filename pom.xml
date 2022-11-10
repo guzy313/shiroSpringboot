@@ -40,11 +40,18 @@
 			<version>1.4.0</version>
 		</dependency>
 
-		<!-- jwt -->
+		<!-- jwt 加密签名 -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
 			<version>0.9.1</version>
+		</dependency>
+
+		<!--引入jwt verify 校验 -->
+		<dependency>
+			<groupId>com.auth0</groupId>
+			<artifactId>java-jwt</artifactId>
+			<version>3.9.0</version>
 		</dependency>
 
 
