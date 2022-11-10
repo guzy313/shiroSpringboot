@@ -51,14 +51,14 @@ public class KickedOutAuthorizationFilter extends AccessControlFilter{
         //获取当前会话是否登录成功
         boolean authenticated = SecurityUtils.getSubject().isAuthenticated();
         log.info("登录并发过滤器中是否认证成功:"+authenticated);
+        //如果当前登录用户认证成功,则开始操作当前账号的用户sessionID的队列
         if(authenticated){
             String sessionId = SecurityUtils.getShiroSessionId();
             //获取当前登录用户的sessionID队列
             RQueue<String> queue = redissonClient.
                     getQueue(CacheConstant.ACTIVE_SESSIONID_QUEUE_PREFIX + SecurityUtils.getShUsers().getLoginName());
-            //如果当前登录用户认证成功,则开始操作当前账号的用户sessionID的队列
+            //判断当前会话ID是否出于队列中，不处于队列中则进行操作
             boolean contains = queue.contains(sessionId);
-
             if(!contains){
                 //查询队列中已经过期的会话进行删除
                 List<String> queueSessionIdList = queue.readAll();
