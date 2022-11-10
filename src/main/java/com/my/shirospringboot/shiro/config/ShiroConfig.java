@@ -222,9 +222,7 @@ public class ShiroConfig {
         sessionManager.setSessionIdCookie(this.simpleCookie());
         //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
         //此处设置为半小时过期
-//        sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
-        //测试60秒过期-待删除
-        sessionManager.setGlobalSessionTimeout(60 * 1000);
+        sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
         return sessionManager;
     }
 
