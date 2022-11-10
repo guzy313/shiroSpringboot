@@ -75,6 +75,9 @@ my:
         timeout: 6000
         global-timeout: 25200000
         password: 12345
+      jwt:
+        base64EncodeSecretKey: aaa
+
 crazyredis:
 #集群配置
   nodes: 127.0.0.1:6379,127.0.0.1:6380,127.0.0.1:6381,127.0.0.1:6382,127.0.0.1:6383,127.0.0.1:6384,127.0.0.1:6385

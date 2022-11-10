@@ -1,6 +1,7 @@
 package com.my.shirospringboot.utils;
 
 import org.apache.ibatis.javassist.bytecode.ByteArray;
+import org.apache.shiro.codec.Hex;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -37,5 +38,24 @@ public class EncodesUtils {
         }
         return null;
     }
+
+    /**
+     * @Description: Hex 编码
+     * @param bytes
+     * @return
+     */
+    public static String encodeHex(byte[] bytes){
+       return Hex.encode(bytes).toString();
+    }
+
+    /**
+     * @Description: Hex 解码
+     * @param str
+     * @return
+     */
+    public static String decodeHex(String str){
+        return Hex.decode(str).toString();
+    }
+
 
 }
