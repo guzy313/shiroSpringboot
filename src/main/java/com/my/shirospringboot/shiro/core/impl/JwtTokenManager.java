@@ -51,7 +51,7 @@ public class JwtTokenManager {
         //构建令牌
         JwtBuilder jwtBuilder = Jwts.builder()
                 .setClaims(claims)//构建非隐私信息
-                .setId(sessionId)//jti-构建唯一标识，此时使用shiro生成的唯一ID做标识
+                .setId(sessionId)//jti-构建唯一标识，此时使用shiro生成的唯一ID做标识(存的时候源码中setId的key是jti)
                 .setIssuedAt(new Date())//构建签发时间
                 .setIssuer(iss)//颁发者
                 .signWith(SignatureAlgorithm.HS256,base64EncodeSecretKey);//提供算法以及秘钥
