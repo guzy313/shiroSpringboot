@@ -1,5 +1,8 @@
 package com.my.shirospringboot.shiro.core.filter;
 
+import com.alibaba.fastjson.JSONObject;
+import com.my.shirospringboot.shiro.constant.ShiroConstant;
+import com.my.shirospringboot.shiro.core.base.BaseResponse;
 import com.my.shirospringboot.shiro.core.impl.JwtTokenManager;
 import com.my.shirospringboot.utils.StringUtils;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
@@ -7,6 +10,8 @@ import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 
 /**
  * @author guzy
@@ -35,7 +40,7 @@ public class JwtAuthenticationFilter extends FormAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         //判断请求头中是否包含jwtToken
-        String jwtToken = WebUtils.toHttp(request).getHeader("jwtToken");
+        String jwtToken = WebUtils.toHttp(request).getHeader(ShiroConstant.JWT_TOKEN);
         if(StringUtils.isNotEmpty(jwtToken)){
             //存在则进行token验证
             boolean verifyToken = this.jwtTokenManager.isVerifyToken(jwtToken);
@@ -60,6 +65,17 @@ public class JwtAuthenticationFilter extends FormAuthenticationFilter {
      */
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        String jwtToken = httpServletRequest.getHeader(ShiroConstant.JWT_TOKEN);
+        if(StringUtils.isNotEmpty(jwtToken)){
+            //如果存在jwtToken
+            BaseResponse baseResponse = new BaseResponse(ShiroConstant.NO_LOGIN_CODE,
+                    ShiroConstant.NO_LOGIN_MESSAGE,new Date(System.currentTimeMillis()).toString());
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json;charset=utf-8");
+            response.getWriter().write(JSONObject.toJSONString(baseResponse));
+        }
+        //不存在jwtToken
         return super.onAccessDenied(request, response);
     }
 }

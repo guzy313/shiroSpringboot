@@ -12,7 +12,7 @@ import java.io.Serializable;
 /**
  * @author Gzy
  * @version 1.0
- * @Description
+ * @Description: redis的sessionManager
  */
 public class MySessionManager extends DefaultWebSessionManager {
 

@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.core.impl;
 
+import com.my.shirospringboot.shiro.constant.ShiroConstant;
 import com.my.shirospringboot.utils.StringUtils;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
@@ -16,7 +17,7 @@ import java.io.Serializable;
  */
 public class JwtSessionManager extends MySessionManager{
     //从请求中获得session的key
-    public static final String AUTHORIZATION = "jwtToken";
+    public static final String AUTHORIZATION = ShiroConstant.JWT_TOKEN;
     //自定义注入的资源类型名称
     public static final String REFERENCED_SESSION_ID_SOURCE = "Stateless request";
 
