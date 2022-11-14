@@ -6,6 +6,7 @@ import io.jsonwebtoken.Claims;
 import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.apache.shiro.web.util.WebUtils;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.Serializable;
@@ -22,7 +23,9 @@ public class JwtSessionManager extends MySessionManager{
     public static final String REFERENCED_SESSION_ID_SOURCE = "Stateless request";
 
 
+
     //通过构造函数从spring容器中获取该组件
+    @Resource(name = "jwtTokenManager")
     private JwtTokenManager jwtTokenManager;
 
     public JwtSessionManager() {
