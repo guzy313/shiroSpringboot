@@ -1,6 +1,7 @@
 package com.my.shirospringboot.shiro.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
  * @version 1.0
  * @Description: jwt配置文件
  */
+@Component
 @ConfigurationProperties(prefix = "my.shirospringboot.shiro.jwt")
 public class JwtProperties implements Serializable {
     //签名密码

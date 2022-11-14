@@ -1,6 +1,8 @@
 package com.my.shirospringboot.shiro.web.account;
 
+import com.alibaba.fastjson.JSONObject;
 import com.my.shirospringboot.shiro.constant.CacheConstant;
+import com.my.shirospringboot.shiro.core.base.BaseResponse;
 import com.my.shirospringboot.shiro.service.UserService;
 import com.my.shirospringboot.shiro.service.impl.LoginServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
@@ -15,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
@@ -38,6 +41,18 @@ public class LoginAction {
     @Autowired
     private UserServiceImpl userService;
 
+
+    /**
+     * @Descrition: jwt登录
+     * @param loginVo
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping("/jwtLogin")
+    public String jwtLogin(LoginVo loginVo){
+        BaseResponse baseResponse = loginService.jwtRoute(loginVo);
+        return JSONObject.toJSONString(baseResponse);
+    }
 
 
     /**

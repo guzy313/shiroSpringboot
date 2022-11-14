@@ -76,7 +76,7 @@ my:
         global-timeout: 25200000
         password: 12345
       jwt:
-        base64EncodeSecretKey: aaa
+        base64EncodeSecretKey: gzy
 
 crazyredis:
 #集群配置

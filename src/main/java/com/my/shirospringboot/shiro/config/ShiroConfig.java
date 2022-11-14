@@ -2,8 +2,7 @@ package com.my.shirospringboot.shiro.config;
 
 import com.my.shirospringboot.shiro.constant.CacheConstant;
 import com.my.shirospringboot.shiro.core.ShiroDbRealm;
-import com.my.shirospringboot.shiro.core.filter.KickedOutAuthorizationFilter;
-import com.my.shirospringboot.shiro.core.filter.RolesOrAuthorizationFilter;
+import com.my.shirospringboot.shiro.core.filter.*;
 import com.my.shirospringboot.shiro.core.impl.*;
 import com.my.shirospringboot.utils.PropertiesUtils;
 import lombok.extern.log4j.Log4j2;
@@ -43,6 +42,9 @@ public class ShiroConfig {
 
     @Autowired
     private ShiroRedisProperties shiroRedisProperties;
+
+    @Autowired
+    private JwtTokenManager jwtTokenManager;
 
     @Value("${crazyredis.nodes}")
     private String nodes;
@@ -198,20 +200,48 @@ public class ShiroConfig {
         return redisSessionDAO;
     }
 
+
     @Bean
     public MySessionManager redisSessionManager(){
         return new MySessionManager();
     }
 
+    @Bean
+    public JwtSessionManager jwtSessionManager(){
+        return new JwtSessionManager();
+    }
+
+
+    //创建会话管理器
+//    @Bean
+//    public DefaultWebSessionManager sessionManager(){
+//        DefaultWebSessionManager sessionManager = this.redisSessionManager();
+//
+//        //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
+//        sessionManager.setSessionDAO(this.redisSessionDAO());
+//
+//        //设置删除无效会话
+//        sessionManager.setDeleteInvalidSessions(true);
+//        //关闭会话更新(因为没有配置会话定时任务,所以直接用最下面的设置过期时间,性能消耗比较大)
+//        sessionManager.setSessionValidationSchedulerEnabled(false);
+//        //设置cookie状态为开启(生效cookie)
+//        sessionManager.setSessionIdCookieEnabled(true);
+//        //指定cookie创建方式(创建方式是 当前类中simpleCookie())
+//        sessionManager.setSessionIdCookie(this.simpleCookie());
+//        //设置会话的过期时间((60 * 60 * 1000);//单位为毫秒)
+//        //此处设置为半小时过期
+//        sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
+//        return sessionManager;
+//    }
 
     //创建会话管理器
     @Bean
-    public DefaultWebSessionManager sessionManager(){
-        DefaultWebSessionManager sessionManager = this.redisSessionManager();
+    public JwtSessionManager sessionManager(){
+        JwtSessionManager sessionManager = this.jwtSessionManager();
 
         //设置 自定义的会话Dao(解决分布式问题,将会话写入redis缓存)
         sessionManager.setSessionDAO(this.redisSessionDAO());
-        
+
         //设置删除无效会话
         sessionManager.setDeleteInvalidSessions(true);
         //关闭会话更新(因为没有配置会话定时任务,所以直接用最下面的设置过期时间,性能消耗比较大)
@@ -225,6 +255,8 @@ public class ShiroConfig {
         sessionManager.setGlobalSessionTimeout(30 * 60 * 1000);
         return sessionManager;
     }
+
+
 
     //创建生命周期管理
 //    @Bean(value = "lifecycleBeanPostProcessor")
@@ -271,6 +303,9 @@ public class ShiroConfig {
         return shiroFilterFactoryBean;
     }
 
+
+
+
     /**
      * 自定义过滤器
      * @return filtersMap -自定义的过滤器Map<String, Filter>集合
@@ -283,6 +318,9 @@ public class ShiroConfig {
                 this.redissonClient(),
                 this.timeout
                 ));
+        filtersMap.put("jwt-authc",new JwtAuthenticationFilter(jwtTokenManager));
+        filtersMap.put("jwt-perms",new JwtPermsFilter());
+        filtersMap.put("jwt-roles",new JwtRolesFilter());
         return filtersMap;
     }
 

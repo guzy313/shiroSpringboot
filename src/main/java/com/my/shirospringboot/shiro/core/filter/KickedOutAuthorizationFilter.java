@@ -61,14 +61,17 @@ public class KickedOutAuthorizationFilter extends AccessControlFilter{
             boolean contains = queue.contains(sessionId);
             if(!contains){
                 //查询队列中已经过期的会话进行删除
-                List<String> queueSessionIdList = queue.readAll();
-                RBucket<String> queueSessionIdBucket = null;
-                for (String queueSessionId:queueSessionIdList) {
-                    queueSessionIdBucket = redissonClient.getBucket(CacheConstant.SESSION_PREFIX + queueSessionId);
-                    boolean exists = queueSessionIdBucket.isExists();
-                    if(!exists){
-                        log.info("删除过期会话sessionID:" + queueSessionId);
-                        queue.remove(queueSessionId);
+                List<String> queueSessionIdList = null;
+                if(queue.size() > 0){
+                    queueSessionIdList = queue.readAll();
+                    RBucket<String> queueSessionIdBucket = null;
+                    for (String queueSessionId:queueSessionIdList) {
+                        queueSessionIdBucket = redissonClient.getBucket(CacheConstant.SESSION_PREFIX + queueSessionId);
+                        boolean exists = queueSessionIdBucket.isExists();
+                        if(!exists){
+                            log.info("删除过期会话sessionID:" + queueSessionId);
+                            queue.remove(queueSessionId);
+                        }
                     }
                 }
                 //如果不存在当前会话ID则进行队列操作

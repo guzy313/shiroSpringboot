@@ -7,7 +7,9 @@ import com.my.shirospringboot.shiro.core.impl.JwtTokenManager;
 import com.my.shirospringboot.utils.StringUtils;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +21,7 @@ import java.util.Date;
  * @Description
  */
 public class JwtAuthenticationFilter extends FormAuthenticationFilter {
+
 
     private JwtTokenManager jwtTokenManager;
 
@@ -69,8 +72,8 @@ public class JwtAuthenticationFilter extends FormAuthenticationFilter {
         String jwtToken = httpServletRequest.getHeader(ShiroConstant.JWT_TOKEN);
         if(StringUtils.isNotEmpty(jwtToken)){
             //如果存在jwtToken
-            BaseResponse baseResponse = new BaseResponse(ShiroConstant.NO_LOGIN_CODE,
-                    ShiroConstant.NO_LOGIN_MESSAGE,new Date(System.currentTimeMillis()).toString());
+            BaseResponse baseResponse = new BaseResponse(ShiroConstant.NO_AUTH_CODE,
+                    ShiroConstant.NO_AUTH_MESSAGE);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().write(JSONObject.toJSONString(baseResponse));

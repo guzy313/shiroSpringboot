@@ -1,5 +1,6 @@
 package com.my.shirospringboot.shiro.service;
 
+import com.my.shirospringboot.shiro.core.base.BaseResponse;
 import com.my.shirospringboot.shiro.vo.LoginVo;
 
 import java.util.Map;
@@ -11,6 +12,9 @@ import java.util.Map;
  */
 public interface LoginService {
 
+
     public Map<String,String> route(LoginVo loginVo) ;
+
+    public BaseResponse jwtRoute(LoginVo loginVo);
 
 }

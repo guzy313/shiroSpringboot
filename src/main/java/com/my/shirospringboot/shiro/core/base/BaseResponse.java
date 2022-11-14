@@ -12,6 +12,7 @@ public class BaseResponse {
     private Integer code;
     private String msg;
     private String date;
+    private String info;
 
     private static final long serialVersionUID = -1;
 
@@ -20,10 +21,10 @@ public class BaseResponse {
         this.msg = msg;
     }
 
-    public BaseResponse(Integer code, String msg, String date) {
+    public BaseResponse(Integer code, String msg, String info) {
         this.code = code;
         this.msg = msg;
-        this.date = date;
+        this.info = info;
     }
 
 
@@ -51,13 +52,11 @@ public class BaseResponse {
         this.date = date;
     }
 
+    public String getInfo() {
+        return info;
+    }
 
-    @Override
-    public String toString() {
-        return "BaseResponse{" +
-                "code=" + code +
-                ", msg='" + msg + '\'' +
-                ", date='" + date + '\'' +
-                '}';
+    public void setInfo(String info) {
+        this.info = info;
     }
 }

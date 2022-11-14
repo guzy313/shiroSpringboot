@@ -28,6 +28,7 @@ import java.util.Map;
 @EnableConfigurationProperties({JwtProperties.class})
 public class JwtTokenManager {
 
+    @Autowired
     private JwtProperties jwtProperties;
 
     /**
