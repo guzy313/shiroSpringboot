@@ -8,11 +8,15 @@
     <meta http-equiv="cache-control" content="no-cache,must-revalidate" />
     <meta http-equiv="pragram" content="no-cache" />
     <meta http-equiv="expires" content="0" />
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script type="text/javascript"  th:src="@{/js/jquery-3.3.1.js}"></script>
-    <script src="https://unpkg.com/vue@2.7.10"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <!-- css -->
+    <!--引入 element-ui 的样式，-->
+    <link rel="stylesheet" th:src="@{/css/element/index.css}">
+
+    <!-- js -->
+    <script  type="text/javascript" th:src="@{/js/jquery-3.3.1.js}"></script>
+    <script th:src="@{/js/vue.js}"></script>
+<!--    <script th:src="@{/js/axios.min.js}"></script>-->
+    <script th:src="@{/js/element-index.js}"></script>
     <title>角色管理</title>
     <style>
         * {

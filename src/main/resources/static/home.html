@@ -10,13 +10,13 @@
     <meta http-equiv="expires" content="0" />
     <!-- css -->
     <!--引入 element-ui 的样式，-->
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <link rel="stylesheet" th:href="@{/css/element/index.css}">
 
     <!-- js -->
     <script  type="text/javascript" th:src="@{/js/jquery-3.3.1.js}"></script>
-    <script src="https://unpkg.com/vue@2.7.10"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script th:src="@{/js/vue.js}"></script>
+    <script th:src="@{/js/axios.min.js}"></script>
+    <script th:src="@{/js/element-index.js}"></script>
     <script type="text/javascript" th:src="@{/js/home.js}" ></script>
     <style>
         html,body{height:100%; width:100%; overflow:hidden; margin:0;
@@ -172,7 +172,9 @@
                         <!--<span class="main_tab_span">用户管理</span>-->
                         <!--<span class="main_tab_span">角色管理</span>-->
                         <template>
-                            <el-tabs v-model="activeName" @tab-click="handleClick">
+                            <el-tabs v-model="activeName"
+                                     @tab-click="handleClick"
+                            >
                                 <el-tab-pane label="用户管理" name="first"></el-tab-pane>
                                 <el-tab-pane label="配置管理" name="second"></el-tab-pane>
                                 <el-tab-pane label="角色管理" name="third">
@@ -200,10 +202,14 @@
                 menuData:[],
                 menuLv1Data:[],
                 menuLv2Data:[],
+                activeName:'',
 
             }
         },
         methods: {
+                handleClick(){
+                    //防止报错
+                },
                 handleOpen(key, keyPath) {
                     console.log(key, keyPath);
                 },

@@ -17,15 +17,21 @@ public class BaseInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String uri = request.getRequestURI();
         System.out.println(uri);
-        Subject subject = SecurityUtils.getSubject();
-        boolean authenticated = subject.isAuthenticated();//是否登录
-        if(authenticated){
-            return true;
-        }else{
-            System.out.println("======================未登录成功============================================");
-            response.sendRedirect("/account/login");
-            return false;
+        try {
+            Subject subject = SecurityUtils.getSubject();
+            boolean authenticated = subject.isAuthenticated();//是否登录
+            if(authenticated){
+                return true;
+            }else{
+                System.out.println("======================未登录成功============================================");
+                response.sendRedirect("/account/login");
+                return false;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+        return false;
+
     }
 
     @Override
