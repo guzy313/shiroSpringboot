@@ -45,10 +45,14 @@ public class JwtAuthenticationFilter extends FormAuthenticationFilter {
         //判断请求头中是否包含jwtToken
         String jwtToken = WebUtils.toHttp(request).getHeader(ShiroConstant.JWT_TOKEN);
         if(StringUtils.isNotEmpty(jwtToken)){
-            //存在则进行token验证
+            //存在则进行token验证 (验证token是否有效)
             boolean verifyToken = this.jwtTokenManager.isVerifyToken(jwtToken);
             if(verifyToken){
-                //如果校验通过,则继续进行父层校验 //TODO 此处不理解
+                //如果校验通过,则继续进行父层校验
+                /*此处已经理解，先走jwt会话管理器(JwtSessionManager)进行token解析，
+                    解析通过则将对应的request header写入request域
+                    因此到此处时 其实只需要进行token的校验，实际认证信息已经在会话管理器中写入request
+                */
                 return super.isAccessAllowed(request, response, mappedValue);
             }else{
                 return false;
