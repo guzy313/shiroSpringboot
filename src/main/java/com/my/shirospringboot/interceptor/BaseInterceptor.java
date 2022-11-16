@@ -19,6 +19,12 @@ public class BaseInterceptor implements HandlerInterceptor {
         System.out.println(uri);
         try {
             Subject subject = SecurityUtils.getSubject();
+            if(subject == null){
+                //防止subject为空情况
+                System.out.println("======================未登录成功============================================");
+                response.sendRedirect("/account/login");
+                return false;
+            }
             boolean authenticated = subject.isAuthenticated();//是否登录
             if(authenticated){
                 return true;
