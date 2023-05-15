@@ -8,6 +8,7 @@ import com.my.shirospringboot.shiro.service.impl.LoginServiceImpl;
 import com.my.shirospringboot.shiro.service.impl.UserServiceImpl;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.shiro.vo.LoginVo;
+import com.my.shirospringboot.utils.CustomInitSystemParams;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.authz.annotation.*;
@@ -40,7 +41,6 @@ public class LoginAction {
     private LoginServiceImpl loginService;
     @Autowired
     private UserServiceImpl userService;
-
 
     /**
      * @Descrition: jwt登录

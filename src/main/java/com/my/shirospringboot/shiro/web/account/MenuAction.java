@@ -4,14 +4,18 @@ import com.my.shirospringboot.pojo.ShPermission;
 import com.my.shirospringboot.shiro.utils.SecurityUtils;
 import com.my.shirospringboot.shiro.vo.PermissionVo;
 import com.my.shirospringboot.utils.BeanUtils;
+import com.my.shirospringboot.utils.CustomInitSystemParams;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,10 +30,13 @@ import java.util.Map;
 @RequestMapping("/menus")
 public class MenuAction {
     private static final Logger log = LoggerFactory.getLogger(MenuAction.class);
+    @Resource
+    private CustomInitSystemParams customInitSystemParams;
 
 
     @RequestMapping("/system")
-    public ModelAndView menu(){
+    public ModelAndView menu(HttpServletRequest request){
+        customInitSystemParams.init(request);
         return new ModelAndView("home");
     }
 

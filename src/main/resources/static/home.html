@@ -131,7 +131,7 @@
 
         <div class="container" style="height: 100%;">
             <div class="header">
-                <div class="systemTitle">牛马管理系统</div>
+                <div class="systemTitle" th:text="${#request.getAttribute('systemName')}">牛马管理系统</div>
                 <div class="loginOut" @click="loginOut()" >登出</div>
             </div>
 
@@ -168,9 +168,10 @@
 
                 </div>
                 <div class="container" style="width: calc(100% - 203px);height: 100%;">
+                    <!--
                     <div class="main_tab">
-                        <!--<span class="main_tab_span">用户管理</span>-->
-                        <!--<span class="main_tab_span">角色管理</span>-->
+                        <span class="main_tab_span">用户管理</span>
+                        <span class="main_tab_span">角色管理</span>
                         <template>
                             <el-tabs v-model="activeName"
                                      @tab-click="handleClick"
@@ -183,7 +184,7 @@
                                 <el-tab-pane label="定时任务补偿" name="fourth"></el-tab-pane>
                             </el-tabs>
                         </template>
-                    </div>
+                    </div>-->
                     <div class="main" style="width: 100%;height: 100%;">
                         <iframe id="pageIframe" style="width: 100%;height: 100%" th:src="@{/user/listInitialize}" scrolling="no" frameborder="0"></iframe>
                     </div>
